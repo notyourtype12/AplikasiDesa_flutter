@@ -66,7 +66,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              buildNavItem(Icons.home, "Beranda", 0),
+              buildNavItem(Icons.home, "Home", 0),
               buildNavItem(Icons.mail, "Surat", 1),
               buildNavItem(Icons.history, "Riwayat", 2),
               buildNavItem(Icons.person, "Profile", 3),
