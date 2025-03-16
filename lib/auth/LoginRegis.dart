@@ -1,18 +1,75 @@
-part of 'auth.dart'; 
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-
-class Loginregis extends StatelessWidget {
+class Loginregis extends StatefulWidget {
   const Loginregis({super.key});
-  
+
+  @override
+  _LoginregisState createState() => _LoginregisState();
+}
+
+class _LoginregisState extends State<Loginregis> {
+  bool isVisible = false;
+  bool isPasswordVisible = false;
+  final _formKey = GlobalKey<FormState>();
+  final _nikController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _loginPasswordController = TextEditingController();
+
+Future<void> _register() async {
+  final String nik = _nikController.text.trim();
+  final String password = _passwordController.text.trim();
+  final String email = _emailController.text.trim();
+  final String phone = _phoneController.text.trim();
+
+  if (nik.isEmpty || password.isEmpty || email.isEmpty || phone.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Semua field harus diisi')),
+    );
+    return;
+  }
+
+  final response = await http.post(
+    Uri.parse('http://127.0.0.1:8000/api/register'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'nik': nik,
+      'password': password,
+      'email': email,
+      'no_hp': phone
+    }),
+  );
+
+  print('Status Code: ${response.statusCode}');
+  print('Response Body: ${response.body}');
+
+  if (response.statusCode == 201) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Registrasi berhasil!')),
+    );
+    Navigator.pop(context);
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: ${response.body}')),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 55, 115, 164),
+      backgroundColor: const Color.fromARGB(255, 78, 163, 232),
       body: SafeArea(
         bottom: false,
         child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: defaultMargin),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           children: [
             Image.asset(
               'assets/images/logosplash.png',
@@ -20,7 +77,7 @@ class Loginregis extends StatelessWidget {
               fit: BoxFit.fill,
             ),
             const SizedBox(height: 15),
-            Text(
+            const Text(
               "Selamat Datang",
               style: TextStyle(
                 color: Colors.black,
@@ -29,7 +86,7 @@ class Loginregis extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 15),
-            Text(
+            const Text(
               "Kami Siap Mempermudah Anda",
               style: TextStyle(
                 color: Colors.black,
@@ -37,233 +94,25 @@ class Loginregis extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 15),
-            Container(
+
+            // Tombol Registrasi
+            SizedBox(
               height: 60,
-              width: MediaQuery.of(context).size.width - 2 * defaultMargin,
+              width: MediaQuery.of(context).size.width - 40,
               child: ElevatedButton(
                 onPressed: () {
-                  // Menampilkan modal register
-                  showModalBottomSheet(
-                    isScrollControlled: true,
-                    context: context,
-                    backgroundColor: Colors.transparent, // untuk meghilngkn bg white
-                    builder: (context) {
-                      return StatefulBuilder(
-                        builder: (BuildContext context, StateSetter setState) {
-                          // Variabel untuk menyimpan data
-                          String selectedGender = 'Laki-laki'; 
-                          bool isPasswordVisible = false;
-                          TextEditingController dateController = TextEditingController();
-
-                          return Wrap(
-                            children: [
-                              // MODAL REGIS
-                              Container(
-                                color: Colors.transparent, // agar Latar belakang transparan
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 159, 155, 117), // mengatur modal 
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(40),
-                                      topRight: Radius.circular(40),
-                                    ),
-                                  ),
-                                  // container untuk text
-                                  child: Container( 
-                                    margin: EdgeInsets.symmetric(horizontal: defaultMargin),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start, // Untuk rata kiri
-                                      children: [
-                                        SizedBox(height: 25), // Jarak
-                                        Row(
-                                          children: [
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start, // Untuk rata kiri
-                                              children: [
-                                                Text(
-                                                  "Hello World",
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  "Registrasi",
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 30,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Spacer(),
-                                            // Jika ingin menambahkan tombol close
-                                            // Image.asset(
-                                            //   'assets/images/closex.png',
-                                            //   height: 30,
-                                            //   width: 30,
-                                            // ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 25), // Jarak
-
-                                        // Text fields
-                                        TextField(
-                                          decoration: InputDecoration(
-                                            icon: Icon(Icons.person),
-                                            labelText: 'Nama Panjang',
-                                            hintText: 'Masukkan nama panjang anda',
-                                            border: OutlineInputBorder(),
-                                          ),
-                                        ),
-                                        SizedBox(height: 20),
-
-                                        TextField(
-                                          decoration: InputDecoration(
-                                            icon: Icon(Icons.person),
-                                            labelText: 'Username',
-                                            hintText: 'Masukkan username anda',
-                                            border: OutlineInputBorder(),
-                                          ),
-                                        ),
-                                        SizedBox(height: 20),
-
-                                        TextField(
-                                          decoration: InputDecoration(
-                                            icon: Icon(Icons.email),
-                                            labelText: 'Email',
-                                            hintText: 'Masukkan email anda',
-                                            border: OutlineInputBorder(),
-                                          ),
-                                        ),
-                                        SizedBox(height: 20),
-
-                                        // Password  visibility
-                                        TextField(
-                                          obscureText: !isPasswordVisible, // hide password
-                                          decoration: InputDecoration(
-                                            icon: Icon(Icons.lock),
-                                            suffixIcon: IconButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  isPasswordVisible = !isPasswordVisible; // Toggle visibility
-                                                });
-                                              },
-                                              icon: Icon(
-                                                isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                              ),
-                                            ),
-                                            labelText: 'Password',
-                                            hintText: 'Masukkan Password Anda',
-                                            border: OutlineInputBorder(),
-                                          ),
-                                        ),
-                                        SizedBox(height: 20),
-
-                                        // Date picker
-                                        TextField(
-                                          controller: dateController,
-                                          decoration: InputDecoration(
-                                            icon: Icon(Icons.calendar_month),
-                                            labelText: 'Tanggal Lahir',
-                                            hintText: 'Pilih Tanggal Lahir',
-                                            border: OutlineInputBorder(),
-                                          ),
-                                          readOnly: true, // buat enabled biar ga bida edit
-                                          onTap: () async {
-                                            // Menampilkan date picker
-                                            DateTime? pickedDate = await showDatePicker(
-                                              context: context,
-                                              initialDate: DateTime.now(),
-                                              firstDate: DateTime(1900),
-                                              lastDate: DateTime.now(),
-                                            );
-
-                                            if (pickedDate != null) {
-                                              // Format tanggal dan set ke controller
-                                              String formattedDate = "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-                                              dateController.text = formattedDate;
-                                            }
-                                          },
-                                        ),
-                                        SizedBox(height: 20),
-
-                                        // Dropdown untuk jenis kelamin
-                                        DropdownButtonFormField<String>(
-                                          value: selectedGender,
-                                          decoration: InputDecoration(
-                                            icon: Icon(Icons.woman),
-                                            labelText: 'Jenis Kelamin',
-                                            border: OutlineInputBorder(),
-                                          ),
-                                          items: ['Laki-laki', 'Perempuan'].map((String value) {
-                                            return DropdownMenuItem<String>(
-                                              value: value,
-                                              child: Text(value),
-                                            );
-                                          }).toList(),
-                                          onChanged: (String? newValue) {
-                                            setState(() {
-                                              selectedGender = newValue!;
-                                            });
-                                          },
-                                        ),
-                                        SizedBox(height: 20),
-
-                                        TextField(
-                                          decoration: InputDecoration(
-                                            icon: Icon(Icons.phone),
-                                            labelText: 'No HP',
-                                            hintText: 'Masukkan Nomor Handphone Anda',
-                                            border: OutlineInputBorder(),
-                                          ),
-                                        ),
-                                        SizedBox(height: 20),
-
-                                        TextField(
-                                          decoration: InputDecoration(
-                                            icon: Icon(Icons.home),
-                                            labelText: 'Alamat',
-                                            hintText: 'cth: Jl Tidar',
-                                            border: OutlineInputBorder(),
-                                          ),
-                                        ),
-                                        SizedBox(height: 20),
-
-                                    Center(
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      // Aksi ketika tombol ditekan
-                                    },
-                                    child: Text('Buat Akun Baru'),
-                                  ),
-                                )
-                
-                 
-                 
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  );
+                  showRegisterModal(context);
                 },
-                child: Text(
+                child: const Text(
                   'Registrasi',
-                  style: whiteTextStyle.copyWith(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w500,
                     color: Colors.black,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 182, 176, 125),
+                  backgroundColor: const Color.fromARGB(255, 212, 209, 181),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -271,138 +120,28 @@ class Loginregis extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 15),
-            Container(
+
+            // Tombol Login
+            SizedBox(
               height: 60,
-              width: MediaQuery.of(context).size.width - 2 * defaultMargin,
+              width: MediaQuery.of(context).size.width - 40,
               child: ElevatedButton(
                 onPressed: () {
-                  // Menampilkan modal login
-                  showModalBottomSheet(
-                    isScrollControlled: true,
-                    context: context,
-                    backgroundColor: Colors.transparent, // Menghilangkan latar belakang putih
-                    builder: (context) {
-                      return StatefulBuilder(
-                        builder: (BuildContext context, StateSetter setState) {
-                          bool isPasswordVisible = false;
-
-                          return Wrap(
-                            children: [
-                              // Bagian modal
-                              Container(
-                                color: Colors.transparent, // Latar belakang transparan
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 182, 176, 125), // Warna latar belakang konten modal
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(40),
-                                      topRight: Radius.circular(40),
-                                    ),
-                                  ),
-                                  child: Container(
-                                    margin: EdgeInsets.symmetric(horizontal: defaultMargin),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start, // Untuk rata kiri
-                                      children: [
-                                        SizedBox(height: 25), // Jarak
-                                        Row(
-                                          children: [
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start, // Untuk rata kiri
-                                              children: [
-                                                Text(
-                                                  "Hello World",
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  "Login",
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 30,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Spacer(),
-                                            // Jika ingin menambahkan tombol close
-                                            // Image.asset(
-                                            //   'assets/images/closex.png',
-                                            //   height: 30,
-                                            //   width: 30,
-                                            // ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 25), // Jarak
-
-                                         TextField(
-                                          decoration: InputDecoration(
-                                            icon: Icon(Icons.person),
-                                            labelText: 'Username',
-                                            hintText: 'Masukkan username anda',
-                                            border: OutlineInputBorder(),
-                                          ),
-                                        ),
-                                        SizedBox(height: 20),
-
-                                        // Password field dengan toggle visibility
-                                        TextField(
-                                          obscureText: !isPasswordVisible, // Menyembunyikan/menampilkan password
-                                          decoration: InputDecoration(
-                                            icon: Icon(Icons.lock),
-                                            suffixIcon: IconButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  isPasswordVisible = !isPasswordVisible; // Toggle visibility
-                                                });
-                                              },
-                                              icon: Icon(
-                                                isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                              ),
-                                            ),
-                                            labelText: 'Password',
-                                            hintText: 'Masukkan Password Anda',
-                                            border: OutlineInputBorder(),
-                                          ),
-                                        ),
-                                        SizedBox(height: 20),
-                                         Center(
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            // Aksi ketika tombol ditekan
-                                          },
-                                          child: Text('Masuk'),
-                                        ),
-                                      )
-
-                                       
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  );
+                  showLoginModal(context);
                 },
-                child: Text(
+                child: const Text(
                   'Login',
-                  style: whiteTextStyle.copyWith(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w500,
                     color: Colors.black,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 55, 115, 164),
+                  backgroundColor: const Color.fromARGB(255, 78, 163, 232),
                   shape: RoundedRectangleBorder(
-                    side: BorderSide(color: const Color.fromARGB(255, 182, 176, 125), width: 3),
+                    side: const BorderSide(
+                        color: Color.fromARGB(255, 212, 209, 181), width: 3),
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
@@ -411,6 +150,302 @@ class Loginregis extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  // ============================
+  // ✅ Modal untuk Registrasi
+  // ============================
+  void showRegisterModal(BuildContext context) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Wrap(
+              children: [
+                Container(
+                  color: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 212, 209, 181),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(40),
+                        topRight: Radius.circular(40),
+                      ),
+                    ),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 25),
+                            Row(
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "Hello World",
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const Text(
+                                      "Registrasi",
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Spacer(),
+                              ],
+                            ),
+                            const SizedBox(height: 25),
+
+                            // NIK
+                            TextFormField(
+                              controller: _nikController,
+                              decoration: const InputDecoration(
+                                icon: Icon(Icons.person),
+                                labelText: 'NIK',
+                                hintText: 'Masukkan NIK Anda',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'NIK tidak boleh kosong';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 20),
+
+                            // Password
+                            TextFormField(
+                              controller: _passwordController,
+                              obscureText: !isVisible,
+                              decoration: InputDecoration(
+                                icon: const Icon(Icons.lock),
+                                suffixIcon: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      isVisible = !isVisible;
+                                    });
+                                  },
+                                  icon: Icon(isVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off),
+                                ),
+                                labelText: 'Password',
+                                hintText: 'Masukkan Password Anda',
+                                border: const OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Password tidak boleh kosong';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 20),
+
+                            // Email
+                            TextFormField(
+                              controller: _emailController,
+                              decoration: const InputDecoration(
+                                icon: Icon(Icons.email),
+                                labelText: 'E-Mail',
+                                hintText: 'Masukkan E-mail Anda',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'E-Mail tidak boleh kosong';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 20),
+
+                            // Nomor HP
+                            TextFormField(
+                              controller: _phoneController,
+                              decoration: const InputDecoration(
+                                icon: Icon(Icons.phone),
+                                labelText: 'Nomor HP',
+                                hintText: 'Masukkan Nomor HP Anda',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Nomor HP tidak boleh kosong';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 20),
+
+                            // Tombol Buat Akun
+                            SizedBox(
+                              height: 60,
+                              width: MediaQuery.of(context).size.width - 40,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    _register();
+                                  }
+                                },
+                                child: const Text(
+                                  'Buat Akun',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color.fromARGB(255, 78, 163, 232),
+                                  shape: RoundedRectangleBorder(
+                                    side: const BorderSide(
+                                        color: Color.fromARGB(255, 212, 209, 181), width: 3),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ============================
+  // ✅ Modal untuk Login
+  // ============================
+  void showLoginModal(BuildContext context) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Wrap(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 243, 239, 205),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(40),
+                      topRight: Radius.circular(40),
+                    ),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Login", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 20),
+
+                      // Username
+                      TextFormField(
+                        controller: _usernameController,
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.person),
+                          labelText: 'Username',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Username tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Password dengan visibility toggle
+                      TextFormField(
+                        controller: _loginPasswordController,
+                        obscureText: !isPasswordVisible,
+                        decoration: InputDecoration(
+                          icon: const Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                isPasswordVisible = !isPasswordVisible;
+                              });
+                            },
+                            icon: Icon(
+                              isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            ),
+                          ),
+                          labelText: 'Password',
+                          border: const OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Password tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Tombol Masuk
+                      SizedBox(
+                        height: 60,
+                        width: MediaQuery.of(context).size.width - 40,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              // Proses login
+                            }
+                          },
+                          child: const Text(
+                            'Masuk',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 78, 163, 232),
+                            shape: RoundedRectangleBorder(
+                              side: const BorderSide(
+                                  color: Color.fromARGB(255, 212, 209, 181), width: 3),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }
