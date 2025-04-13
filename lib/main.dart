@@ -1,6 +1,7 @@
 
 import 'package:digitalv/auth/LoginRegis.dart';
 import 'package:digitalv/auth/auth.dart';
+import 'package:digitalv/dashboard/bottom_navbar.dart';
 import 'package:digitalv/home.dart';
 import 'package:flutter/material.dart';
 
