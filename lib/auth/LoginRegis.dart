@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../shared/shared.dart';
 import 'dart:math';
+import '../config/globals.dart';
 
 
 class Loginregis extends StatefulWidget {
@@ -43,7 +44,8 @@ class _LoginregisState extends State<Loginregis> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://127.0.0.1:8000/api/register'),
+        // Uri.parse('http://127.0.0.1:8000/api/register'),
+        Uri.parse('$baseURL/register'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -68,7 +70,8 @@ class _LoginregisState extends State<Loginregis> {
           SnackBar(content: Text('Error: ${response.body}')),
         );
       }
-    } on SocketException catch (_) {
+    } 
+    on SocketException catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Tidak ada koneksi internet')),
       );
@@ -84,7 +87,7 @@ class _LoginregisState extends State<Loginregis> {
   }
 
   // Backend login
-  Future<void> login() async {
+  Future<void> login(BuildContext context) async {
     final String nikLogin = nikLoginController.text.trim();
     final String passwordLogin = loginPasswordController.text.trim();
 
@@ -97,7 +100,10 @@ class _LoginregisState extends State<Loginregis> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://127.0.0.1:8000/api/login'), // Ganti dengan IP lokal Anda
+        // Uri.parse('http://127.0.0.1:8000/api/login'), 
+        Uri.parse('$baseURL/login'),
+      
+
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
         body: jsonEncode({'nik': nikLogin, 'password': passwordLogin}),
       );
@@ -109,10 +115,10 @@ class _LoginregisState extends State<Loginregis> {
           const SnackBar(content: Text('Login berhasil')),
         );
 
-        // Navigasi ke halaman utama setelah login berhasil
+      
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Loginregis()), // Ganti dengan halaman utama
+          MaterialPageRoute(builder: (context) => Loginregis()), 
         );
       } else if (response.statusCode == 401) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -579,7 +585,7 @@ class _LoginregisState extends State<Loginregis> {
                             width: 215,
                             child: ElevatedButton(
                               onPressed: () {
-                                login();
+                                login(context);
                               }, 
                               child: const Text(
                                 'Login',
