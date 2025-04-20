@@ -1,7 +1,7 @@
 
 import 'package:digitalv/auth/LoginRegis.dart';
 import 'package:digitalv/auth/auth.dart';
-import 'package:digitalv/home.dart';
+import 'package:digitalv/widgets/bottom_navbar.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: Loginregis(),
+      home: BottomNavBar(),
 
     );
   }

@@ -152,7 +152,7 @@ class _LoginregisState extends State<Loginregis> {
           // Gambar background yang mengisi seluruh layar
           Positioned.fill(
             child: SvgPicture.asset(
-              'assets/image/FIRST PAGE.svg',
+              'assets/images/FIRST PAGE.svg',
               fit: BoxFit.cover,
             ),
           ),
@@ -165,7 +165,7 @@ class _LoginregisState extends State<Loginregis> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset('assets/image/boy2.png',
+                  Image.asset('assets/images/boy2.png',
                   width: MediaQuery.of(context).size.width - 40),
 
                   // const Text(
