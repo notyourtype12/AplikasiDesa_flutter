@@ -28,9 +28,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/my_tab_controller.dart';
-import '../view/status/diajukan.dart';
-import '../view/status/disetujui.dart';
-import '../view/status/ditolak.dart';
+import '../status/diajukan.dart';
+import '../status/disetujui.dart';
+import '../status/ditolak.dart';
 
 
 class StatusTabScreen extends StatelessWidget {
