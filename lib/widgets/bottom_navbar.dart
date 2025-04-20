@@ -19,7 +19,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _pages = [
     const HomeScreen(),
     const SuratScreen(),
-    const StatusScreen(),
+    StatusTabScreen(),
     const ProfileScreen(),
   ];
 
