@@ -56,13 +56,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               onPressed: () {
                                 Navigator.of(
                                   context,
-                                ).pop(); // Tutup dialog konfirmasi
+                                ).pop(); 
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => Loginregis(),
                                   ),
-                                ); // Ganti ke halaman Loginregis
+                                ); 
                               },
                               child: const Text('Ya'),
                             ),
