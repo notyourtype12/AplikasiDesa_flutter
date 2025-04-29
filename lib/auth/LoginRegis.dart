@@ -165,6 +165,7 @@ class _LoginregisState extends State<Loginregis> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+           
                   Image.asset('assets/images/boy2.png',
                   width: MediaQuery.of(context).size.width - 40),
 
@@ -192,7 +193,7 @@ class _LoginregisState extends State<Loginregis> {
                 SizedBox(
                 width: 215, // samain dengan tombol aktivasi
                 child: const Text(
-                  "Pertama kali menggunakan akun?",
+                  "Pertama kali menggunakan aplikasi?",
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
@@ -205,7 +206,7 @@ class _LoginregisState extends State<Loginregis> {
 
             
 
-                  // Tombol Registrasi
+                  // Tombol aktivasi
                   SizedBox(
                     height: 39,
                     // width: MediaQuery.of(context).size.width - 40,
@@ -290,83 +291,78 @@ class _LoginregisState extends State<Loginregis> {
       ),
     );
   }
-  // Modal Registrasi
-  void showRegisterModal(BuildContext context) {
-    showModalBottomSheet(
-      isScrollControlled: true,
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Wrap(
-              children: [
-                Container(
-                  color: Colors.transparent,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: whiteColor,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(40),
-                        topRight: Radius.circular(40),
+  // Modal aktivasi
+void showRegisterModal(BuildContext context) {
+  showModalBottomSheet(
+    isScrollControlled: true,
+    context: context,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      return DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.6,
+        minChildSize: 0.4,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) {
+          return Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(40),
+                topRight: Radius.circular(40),
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+            child: SingleChildScrollView(
+              controller: scrollController, // ini penting biar scroll jalan
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 50,
+                        height: 5,
+                        margin: const EdgeInsets.only(bottom: 15),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 25),
-                            Row(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // const Text(
-                                    //   "Hello World",
-                                    //   style: TextStyle(
-                                    //     color: Colors.black,
-                                    //     fontSize: 14,
-                                    //   ),
-                                    // ),
-                                    const Text(
-                                      "Aktivasi akun",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold,
-                                         fontFamily: 'Poppins',
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ),
-                              
-                              ],
-                            ),
-                            const SizedBox(height: 25),
+                    const Text(
+                      "Aktivasi akun",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins',
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 25),
 
-                            // NIK
-                            TextFormField(
-                              controller: _nikController,
-                              decoration: const InputDecoration(
-                                icon: Icon(Icons.person),
-                                labelText: 'NIK',
-                                hintText: 'Masukkan NIK Anda',
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'NIK tidak boleh kosong';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 20),
+                    // NIK
+                    TextFormField(
+                      controller: _nikController,
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.person),
+                        labelText: 'NIK',
+                        hintText: 'Masukkan NIK Anda',
+                        border: OutlineInputBorder(),
+                      ),
+                      style: const TextStyle(fontSize: 9),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'NIK tidak boleh kosong';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
 
-                            // Password
+                                                // Password
                             TextFormField(
                               controller: _passwordController,
                               obscureText: !isVisible,
@@ -386,6 +382,7 @@ class _LoginregisState extends State<Loginregis> {
                                 hintText: 'Masukkan Password Anda',
                                 border: const OutlineInputBorder(),
                               ),
+                              style: TextStyle(fontSize: 9),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Password tidak boleh kosong';
@@ -395,189 +392,49 @@ class _LoginregisState extends State<Loginregis> {
                             ),
                             const SizedBox(height: 20),
 
-                            // Email
-                            TextFormField(
-                              controller: _emailController,
-                              decoration: const InputDecoration(
-                                icon: Icon(Icons.email),
-                                labelText: 'E-Mail',
-                                hintText: 'Masukkan E-mail Anda',
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'E-Mail tidak boleh kosong';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 20),
 
-                            // Nomor HP
-                            TextFormField(
-                              controller: _phoneController,
-                              decoration: const InputDecoration(
-                                icon: Icon(Icons.phone),
-                                labelText: 'Nomor HP',
-                                hintText: 'Masukkan Nomor HP Anda',
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Nomor HP tidak boleh kosong';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 20),
 
-                            // Tombol aktivasi akun pada modal
-                          Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SizedBox(
-                                    height: 39,
-                                    width: 215,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        if (_formKey.currentState!.validate()) {
-                                          _register();
-                                        }
-                                      },
-                                      child: const Text(
-                                        'Aktivasi akun',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: primaryColor,
-                                        shape: RoundedRectangleBorder(
-                                          side: const BorderSide(color: Color(0xFF0057A6), width: 3),
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
+                    // Email
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.email),
+                        labelText: 'E-Mail',
+                        hintText: 'Masukkan E-Mail Anda',
+                        border: OutlineInputBorder(),
                       ),
+                      style: const TextStyle(fontSize: 9),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'E-Mail tidak boleh kosong';
+                        }
+                        return null;
+                      },
                     ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-  // Modal untuk Login
-  void showLoginModal(BuildContext context) {
-    showModalBottomSheet(
-      isScrollControlled: true,
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Wrap(
-              children: [
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40),
-                      topRight: Radius.circular(40),
+                    const SizedBox(height: 20),
+
+                    // Nomor HP
+                    TextFormField(
+                      controller: _phoneController,
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.phone),
+                        labelText: 'Nomor HP',
+                        hintText: 'Masukkan Nomor HP Anda',
+                        border: OutlineInputBorder(),
+                      ),
+                      style: const TextStyle(fontSize: 9),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Nomor HP tidak boleh kosong';
+                        }
+                        return null;
+                      },
                     ),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
-                  
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("Login", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                      // Username
-                      TextFormField(
-                        controller: nikLoginController,
-                        decoration: const InputDecoration(
-                          icon: Icon(Icons.person),
-                          labelText: 'NIK',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Username tidak boleh kosong';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Password dengan visibility toggle
-                      TextFormField(
-                        controller: loginPasswordController,
-                        obscureText: !isPasswordVisible,
-                        decoration: InputDecoration(
-                          icon: const Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                isPasswordVisible = !isPasswordVisible;
-                              });
-                            },
-                            icon: Icon(
-                              isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                            ),
-                          ),
-                          labelText: 'Password',
-                          border: const OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Password tidak boleh kosong';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Tombol Masuk
-                      // SizedBox(
-                      //   height: 60,
-                      //   width: MediaQuery.of(context).size.width - 40,
-                      //   child: ElevatedButton(
-                      //    onPressed: () {
-                      //       login();
-                      //     },
-                      //     child: const Text(
-                      //             'Masuk',
-                      //             style: TextStyle(
-                      //               fontSize: 20,
-                      //               fontWeight: FontWeight.w500,
-                      //               color: Colors.black,
-                      //             ),
-                      //           ),
-                      //     style: ElevatedButton.styleFrom(
-                      //       backgroundColor: const Color.fromARGB(255, 78, 163, 232),
-                      //       shape: RoundedRectangleBorder(
-                      //         side: const BorderSide(
-                      //             color: Color.fromARGB(255, 212, 209, 181), width: 3),
-                      //         borderRadius: BorderRadius.circular(15),
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                      Center(child: Column(
+                    // Tombol Aktivasi
+                    Center(
+                      child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           SizedBox(
@@ -585,10 +442,12 @@ class _LoginregisState extends State<Loginregis> {
                             width: 215,
                             child: ElevatedButton(
                               onPressed: () {
-                                login(context);
-                              }, 
+                                if (_formKey.currentState!.validate()) {
+                                  _register();
+                                }
+                              },
                               child: const Text(
-                                'Login',
+                                'Aktivasi akun',
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,
@@ -601,20 +460,136 @@ class _LoginregisState extends State<Loginregis> {
                                   side: const BorderSide(color: Color(0xFF0057A6), width: 3),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                              ),),
+                              ),
+                            ),
                           ),
-                          const SizedBox(height: 20,)
+                          const SizedBox(height: 20),
                         ],
-                      ),)
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
 
-                    ],
+   
+  // Modal untuk Login
+  void showLoginModal(BuildContext context) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+  return DraggableScrollableSheet(
+    expand: false,
+    initialChildSize: 0.5, // tinggi awal (60% layar)
+    minChildSize: 0.4,     // tinggi minimum
+    maxChildSize: 0.9,     // tinggi maksimum bisa ditarik
+    builder: (context, scrollController) {
+      return Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(40),
+            topRight: Radius.circular(40),
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+        child: SingleChildScrollView(
+          controller: scrollController, // penting biar scroll lancar
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 50,
+                  height: 5,
+                  margin: const EdgeInsets.only(bottom: 15),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-              ],
-            );
-          },
-        );
-      },
+              ),
+              const Text("Login", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
+
+              // NIK
+              TextFormField(
+                controller: nikLoginController,
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.person),
+                  labelText: 'NIK',
+                  border: OutlineInputBorder(),
+                ),
+                style: const TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 20),
+
+              // Password
+              TextFormField(
+                controller: loginPasswordController,
+                obscureText: !isPasswordVisible,
+                decoration: InputDecoration(
+                  icon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
+                    icon: Icon(
+                      isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    ),
+                  ),
+                  labelText: 'Password',
+                  border: const OutlineInputBorder(),
+                ),
+                style: const TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 20),
+
+              // Tombol Login
+              Center(
+                child: SizedBox(
+                  height: 50,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      login(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+},
+
     );
   }
 }
