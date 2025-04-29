@@ -1,19 +1,22 @@
+import 'package:digitalv/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-class FormPengajuan extends StatefulWidget {
-  const FormPengajuan({super.key});
+class Pengaduan extends StatefulWidget {
+  const Pengaduan({super.key});
 
   @override
-  State<FormPengajuan> createState() => _FormPengajuanState();
+  State<Pengaduan> createState() => _PengaduanState();
 }
 
-class _FormPengajuanState extends State<FormPengajuan> {
-  File? _imageFile;
+class _PengaduanState extends State<Pengaduan> {
+  File? _imageFile; 
+
+  final ImagePicker _picker = ImagePicker(); 
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _imageFile = File(pickedFile.path);
@@ -26,7 +29,7 @@ class _FormPengajuanState extends State<FormPengajuan> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'FORM PENGAJUAN',
+          'FORM PENGADUAN',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -37,67 +40,52 @@ class _FormPengajuanState extends State<FormPengajuan> {
         elevation: 2,
         shadowColor: Colors.black.withOpacity(0.25),
         iconTheme: const IconThemeData(color: Colors.black),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+              );
+            },
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              buildInputField('Nama lengkap'),
-              const SizedBox(height: 16),
-              buildInputField('NIK'),
-              const SizedBox(height: 16),
-              buildInputField('Tempat Lahir'),
-              const SizedBox(height: 16),
-              buildInputField('Tanggal Lahir'),
-              const SizedBox(height: 16),
-              buildInputField('Golongan Darah'),
-              const SizedBox(height: 16),
-              buildInputField('Jenis Kelamin'),
-              const SizedBox(height: 16),
-              buildInputField('Kewarganegaraan'),
-              const SizedBox(height: 16),
-              buildInputField('Agama'),
-              const SizedBox(height: 16),
-              buildInputField('Status Perkawinan'),
-              const SizedBox(height: 16),
-              buildInputField('Status Keluarga'),
-              const SizedBox(height: 16),
-              buildInputField('Pekerjaan'),
-              const SizedBox(height: 16),
-              buildInputField('Pendidikan'),
-              const SizedBox(height: 16),
-              buildInputField('Keperluan'),
-              const SizedBox(height: 16),
-              buildUploadField('Upload Foto KTP'),
-              const SizedBox(height: 26),
-              SizedBox(
-                width: 125,
-                child: ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Pengajuan berhasil dikirim!')),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0057A6),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            buildInputField('Ulasan'),
+            const SizedBox(height: 16),
+            buildUploadField('Upload foto pendukung'),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: 125,
+              child: ElevatedButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Pengaduan berhasil dikirim!')),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0057A6),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Text(
-                    'Kirim',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
+                ),
+                child: const Text(
+                  'Kirim',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

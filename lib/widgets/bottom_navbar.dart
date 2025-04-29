@@ -17,10 +17,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   
   final List<Widget> _pages = [
-    const HomeScreen(),
-    const SuratScreen(),
+    HomeScreen(),
+    SuratScreen(),
     StatusTabScreen(),
-    const ProfileScreen(),
+    ProfileScreen(),
   ];
 
   @override
