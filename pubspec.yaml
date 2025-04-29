@@ -78,6 +78,8 @@ flutter:
     - assets/images/boy2.png
     - assets/images/upload.png
     - assets/images/devano.png
+    - assets/images/boy.png
+    - assets/images/news.png
 
 
   #   - images/a_dot_burr.jpeg
