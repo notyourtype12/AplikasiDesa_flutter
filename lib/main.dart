@@ -34,8 +34,8 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      // home: BottomNavBar(),
-      home: Loginregis(),
+      home: BottomNavBar(),
+      // home: Loginregis(),
 
 
     );
