@@ -1,5 +1,7 @@
 
 import 'package:digitalv/auth/LoginRegis.dart';
+import 'package:digitalv/auth/LupaPassword.dart';
+
 import 'package:digitalv/auth/auth.dart';
 import 'package:digitalv/widgets/bottom_navbar.dart';
 import 'package:flutter/material.dart';
@@ -34,9 +36,14 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
+<<<<<<< HEAD
       home: BottomNavBar(),
       // home: Loginregis(),
+=======
+>>>>>>> 19666b07bd1d133b76a0de59d8f2db29a1c6812f
 
+      // home: BottomNavBar(),
+      home: BottomNavBar(),
 
     );
   }
