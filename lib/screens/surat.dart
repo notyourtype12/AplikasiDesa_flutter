@@ -1,3 +1,4 @@
+import 'package:digitalv/screens/form_kematian.dart';
 import 'package:flutter/material.dart';
 import '../screens/form_pengajuan.dart';
 
@@ -77,7 +78,7 @@ class _SuratScreenState extends State<SuratScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FormPengajuan()),
+                  MaterialPageRoute(builder: (context) => FormKematian()),
                 );
               },
             ),

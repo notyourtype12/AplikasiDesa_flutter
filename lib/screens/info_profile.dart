@@ -155,7 +155,7 @@ class _InfoProfileState extends State<InfoProfile> {
                         child: Row(
                           children: const [
                             Text(
-                              'Ubah',
+                              'Edit',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blue,

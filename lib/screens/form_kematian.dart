@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-class FormPengajuan extends StatefulWidget {
-  const FormPengajuan({super.key});
+class FormKematian extends StatefulWidget {
+  const FormKematian({super.key});
 
   @override
-  State<FormPengajuan> createState() => _FormPengajuanState();
+  State<FormKematian> createState() => _FormKematianState();
 }
 
-class _FormPengajuanState extends State<FormPengajuan> {
+class _FormKematianState extends State<FormKematian> {
   final TextEditingController namaController = TextEditingController(text: 'Mochammad Adji');
   final TextEditingController nikController = TextEditingController(text: '3201234567890001');
   final TextEditingController tempatLahirController = TextEditingController(text: 'Lumajang');
@@ -68,7 +68,7 @@ class _FormPengajuanState extends State<FormPengajuan> {
             buildInputField('Status Keluarga', statusKeluargaController, false),
             buildInputField('Pekerjaan', pekerjaanController, false),
             buildInputField('Pendidikan', pendidikanController, false),
-            buildInputField('Keperluan', keperluanController, true),
+            buildInputField('Nama Almarhum', keperluanController, true),
             const SizedBox(height: 16),
             buildUploadField('Upload Foto KTP'),
             const SizedBox(height: 26),
@@ -186,12 +186,3 @@ class _FormPengajuanState extends State<FormPengajuan> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
