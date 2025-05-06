@@ -9,46 +9,51 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  final List<Map<String, dynamic>> layanan = const [
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final List<Map<String, dynamic>> layanan = [
     {
       'icon': Icons.insert_drive_file,
       'label': 'Akta Kelahiran',
-      'color': Color(0xFF1976D2),
+      'color': const Color(0xFF1976D2),
     },
     {
       'icon': Icons.family_restroom,
       'label': 'Kartu Keluarga',
-      'color': Color(0xFF388E3C),
+      'color': const Color(0xFF388E3C),
     },
-    {'icon': Icons.credit_card, 'label': 'KTP', 'color': Color(0xFF455A64)},
+    {'icon': Icons.credit_card, 'label': 'KTP', 'color': const Color(0xFF455A64)},
     {
       'icon': Icons.money_sharp,
       'label': 'SKTM',
-      'color': Color.fromARGB(255, 255, 147, 7),
+      'color': const Color.fromARGB(255, 255, 147, 7),
     },
     {
       'icon': Icons.diversity_3,
       'label': 'Akta Perkawinan',
-      'color': Color(0xFF6A1B9A),
+      'color': const Color(0xFF6A1B9A),
     },
     {
       'icon': Icons.airline_seat_flat,
       'label': 'Akta Kematian',
-      'color': Color(0xFF607D8B),
+      'color': const Color(0xFF607D8B),
     },
     {
       'icon': Icons.apartment,
       'label': 'Pindah Penduduk',
-      'color': Color.fromARGB(255, 167, 0, 17),
+      'color': const Color.fromARGB(255, 167, 0, 17),
     },
     {
       'icon': Icons.receipt_long,
       'label': 'Pernyataan Miskin',
-      'color': Color.fromARGB(255, 116, 53, 31),
+      'color': const Color.fromARGB(255, 116, 53, 31),
     },
   ];
 
-  final List<Map<String, String>> berita = const [
+  final List<Map<String, String>> berita = [
     {
       'judul': 'Perbaikan jalan utama dan pembangunan taman desa.',
       'tanggal': '04 Mei 2025',
@@ -70,11 +75,6 @@ class HomeScreen extends StatefulWidget {
     return Color.lerp(baseColor, Colors.white, 0.7)!;
   }
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
   String namaUser = 'User'; // Default
 
   @override
@@ -229,11 +229,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount: layanan.length,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        childAspectRatio: 1,
-                      ),
+                            crossAxisCount: 4,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                            childAspectRatio: 1,
+                          ),
                       itemBuilder: (context, index) {
                         final item = layanan[index];
                         final backgroundColor = tintColor(item['color']);
@@ -414,3 +414,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
