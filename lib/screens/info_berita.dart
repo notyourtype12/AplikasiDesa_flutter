@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'detail_berita.dart'; // ✅ Tambahkan import ini
+import 'detail_berita.dart';
 
 class InfoBerita extends StatefulWidget {
   const InfoBerita({super.key});
@@ -9,12 +9,22 @@ class InfoBerita extends StatefulWidget {
 }
 
 class _InfoBeritaState extends State<InfoBerita> {
-  final List<String> berita = const [
-    'Dina Lorenza Tegaskan Pentingnya 4 Pilar Kebangsaan...',
-    'UMKM Tegal Dapat Bantuan Infrastruktur Baru...',
-    'Sosialisasi Layanan Kependudukan oleh Disdukcapil...',
-    'Digitalisasi Administrasi Desa Menuju Smart Village...',
-    'Disdukcapil Launching Aplikasi Baru untuk Pelayanan...',
+  final List<Map<String, String>> berita = const [
+    {
+      'judul': 'Perbaikan jalan utama dan pembangunan taman desa.',
+      'tanggal': '04 Mei 2025',
+      'gambar': 'assets/images/news.png',
+    },
+    {
+      'judul': 'Peningkatan fasilitas air bersih untuk warga.',
+      'tanggal': '02 Mei 2025',
+      'gambar': 'assets/images/news.png',
+    },
+    {
+      'judul': 'Pengaspalan jalan dan pembangunan ruang serbaguna.',
+      'tanggal': '28 April 2025',
+      'gambar': 'assets/images/news.png',
+    },
   ];
 
   @override
@@ -24,75 +34,118 @@ class _InfoBeritaState extends State<InfoBerita> {
         title: const Text(
           'INFO BERITA',
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
             color: Color(0xFF0057A6),
           ),
         ),
         backgroundColor: Colors.white,
-        elevation: 2,
+        elevation: 3,
         shadowColor: Colors.black.withOpacity(0.25),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: ListView.separated(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         itemCount: berita.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 12),
+        separatorBuilder: (context, index) => const SizedBox(height: 18),
         itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DetailBerita(judul: berita[index]),
+          final item = berita[index];
+          return Container(
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 6,
+                  offset: const Offset(0, 4),
                 ),
-              );
-            },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: Stack(
-                children: [
-                  Image.asset(
-                    'assets/images/news.png',
-                    height: 160,
-                    width: double.infinity,
+              ],
+            ),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    bottomLeft: Radius.circular(12),
+                  ),
+                  child: Image.asset(
+                    item['gambar']!,
+                    width: 120,
+                    height: double.infinity,
                     fit: BoxFit.cover,
                   ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: 60,
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [
-                            Colors.black87,
-                            Colors.transparent,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          item['judul']!,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.calendar_today, size: 13, color: Colors.grey),
+                                const SizedBox(width: 6),
+                                Text(
+                                  item['tanggal']!,
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DetailBerita(
+                                      judul: item['judul']!,
+                                      tanggal: item['tanggal']!,
+                                      gambar: item['gambar']!,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF0057A6),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Text(
+                                  'Baca',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                  Positioned(
-                    bottom: 10,
-                    left: 10,
-                    right: 10,
-                    child: Text(
-                      berita[index],
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         },

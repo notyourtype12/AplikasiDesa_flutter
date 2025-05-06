@@ -34,6 +34,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         shadowColor: Colors.black.withOpacity(0.2),
         borderRadius: BorderRadius.circular(100),
         child: CurvedNavigationBar(
+          height: 50,
           index: _page,
           backgroundColor: Colors.transparent,
           color: const Color(0xFF0057A6),
