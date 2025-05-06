@@ -1,8 +1,36 @@
 import 'package:digitalv/screens/pengaduan.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String namaUser = 'User'; // Default
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  // Mengambil data dari SharedPreferences
+  void _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      namaUser = prefs.getString('nama') ?? 'User';
+    });
+  }
+
+  // Menyimpan data nama pengguna ke SharedPreferences (Misalnya setelah login)
+  void _saveUserData(String nama) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('nama', nama); // Menyimpan nama di SharedPreferences
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,10 +39,10 @@ class HomeScreen extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(top: 50, left: 20),
             child: Text(
-              'Hi, User!',
+              'Hi,  $namaUser!',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 22,
@@ -71,8 +99,7 @@ class HomeScreen extends StatelessWidget {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder:
-                                            (context) => Pengaduan(),
+                                        builder: (context) => Pengaduan(),
                                       ),
                                     );
                                   },

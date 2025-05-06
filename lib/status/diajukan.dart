@@ -8,7 +8,7 @@ class PengajuanView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<PengajuanModel>>(
-      future: ApiService.fetchPengajuan('acc rt'),
+      future: ApiService.fetchPengajuan(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());

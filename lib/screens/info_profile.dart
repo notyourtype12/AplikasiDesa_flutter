@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../screens/detail_profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../config/profileApi.dart';
 
 class InfoProfile extends StatefulWidget {
   const InfoProfile({super.key});
@@ -13,9 +15,39 @@ class InfoProfile extends StatefulWidget {
 class _InfoProfileState extends State<InfoProfile> {
   File? _image;
 
-  Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+  String _nik = '';
+  String _noKK = '';
+  String _nama = '';
+  String _noHP = '';
+  String _email = '';
 
+ @override
+  void initState() {
+    super.initState();
+    _initializeProfile();
+  }
+
+  Future<void> _initializeProfile() async {
+    await getProfilFromApi(context); // Tunggu API selesai
+    await _loadProfileData(); // Lalu refresh dari SharedPreferences
+  }
+
+
+  Future<void> _loadProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _nik = prefs.getString('nik') ?? 'Belum diatur';
+      _noKK = prefs.getString('no_kk') ?? 'Belum diatur';
+      _nama = prefs.getString('nama_lengkap') ?? 'Belum diatur';
+      _noHP = prefs.getString('no_hp') ?? 'Belum diatur';
+      _email = prefs.getString('email') ?? 'Belum diatur';
+    });
+  }
+
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
@@ -28,7 +60,7 @@ class _InfoProfileState extends State<InfoProfile> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'LAYANAN SURAT',
+          'Profile',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -60,9 +92,11 @@ class _InfoProfileState extends State<InfoProfile> {
                 children: [
                   CircleAvatar(
                     radius: 55,
-                    backgroundImage: _image != null
-                        ? FileImage(_image!)
-                        : const AssetImage('assets/images/devano.png') as ImageProvider,
+                    backgroundImage:
+                        _image != null
+                            ? FileImage(_image!)
+                            : const AssetImage('assets/images/devano.png')
+                                as ImageProvider,
                   ),
                   Positioned(
                     bottom: 0,
@@ -113,7 +147,9 @@ class _InfoProfileState extends State<InfoProfile> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const DetailProfile()),
+                            MaterialPageRoute(
+                              builder: (context) => const DetailProfile(),
+                            ),
                           );
                         },
                         child: Row(
@@ -133,11 +169,11 @@ class _InfoProfileState extends State<InfoProfile> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  buildProfileRow('NIK', '3510000000000000'),
-                  buildProfileRow('No Kartu Keluarga', '3521500000000002'),
-                  buildProfileRow('Nama Lengkap', 'Devano Danendra'),
-                  buildProfileRow('No Handphone', '085748220623'),
-                  buildProfileRow('E-Mail', 'Devano@Gmail.Com'),
+                   buildProfileRow('NIK', _nik),
+                  buildProfileRow('No Kartu Keluarga', _noKK),
+                  buildProfileRow('Nama Lengkap', _nama),
+                  buildProfileRow('No Handphone', _noHP),
+                  buildProfileRow('E-Mail', _email),
                 ],
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailProfile extends StatefulWidget {
   const DetailProfile({super.key});
@@ -8,17 +9,29 @@ class DetailProfile extends StatefulWidget {
 }
 
 class _DetailProfileState extends State<DetailProfile> {
-  final TextEditingController nameController =
-      TextEditingController(text: 'Devano Danendra');
-  final TextEditingController nikController =
-      TextEditingController(text: '3510000000000000');
-  final TextEditingController kkController =
-      TextEditingController(text: '3521500000000002');
-  final TextEditingController phoneController =
-      TextEditingController(text: '085748220623');
-  final TextEditingController emailController =
-      TextEditingController(text: 'Devano@Gmail.Com');
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController nikController = TextEditingController();
+  final TextEditingController kkController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData(); // Load profile data when the screen is initialized
+  }
+
+  // Load data from SharedPreferences
+  Future<void> _loadProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      nameController.text = prefs.getString('nama_lengkap') ?? 'Belum diatur';
+      nikController.text = prefs.getString('nik') ?? 'Belum diatur';
+      kkController.text = prefs.getString('no_kk') ?? 'Belum diatur';
+      phoneController.text = prefs.getString('no_hp') ?? 'Belum diatur';
+      emailController.text = prefs.getString('email') ?? 'Belum diatur';
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

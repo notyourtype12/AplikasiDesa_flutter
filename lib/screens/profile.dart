@@ -3,6 +3,8 @@ import '../screens/detail_profile.dart';
 import '../screens/info_profile.dart';
 import '../auth/LoginRegis.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -11,6 +13,25 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String _nama = '';
+  String _nik = '';
+  String _noHp = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  Future<void> _loadProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _nama = prefs.getString('nama_lengkap') ?? 'Nama tidak ditemukan';
+      _nik = prefs.getString('nik') ?? 'NIK tidak ditemukan';
+      _noHp = prefs.getString('no_hp') ?? 'No HP tidak ditemukan';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,31 +142,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Devano Danendra',
-                          style: TextStyle(
+                        Text(
+                          _nama,
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Row(
-                          children: const [
-                            Icon(Icons.badge, size: 16, color: Colors.grey),
-                            SizedBox(width: 6),
+                          children: [
+                            const Icon(
+                              Icons.badge,
+                              size: 16,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(width: 6),
                             Text(
-                              '3510000000000000',
-                              style: TextStyle(color: Colors.grey),
+                              _nik,
+                              style: const TextStyle(color: Colors.grey),
                             ),
                           ],
                         ),
                         const SizedBox(height: 4),
                         Row(
-                          children: const [
-                            Icon(Icons.phone, size: 16, color: Colors.grey),
-                            SizedBox(width: 6),
-                            Text(
-                              '08574220629',
+                          children: [
+                            const Icon(
+                              Icons.phone,
+                              size: 16,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(_noHp,
                               style: TextStyle(color: Colors.grey),
                             ),
                           ],

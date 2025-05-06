@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
       ),
 
       // home: BottomNavBar(),
-      home: BottomNavBar(),
+      home: Loginregis(),
 
     );
   }

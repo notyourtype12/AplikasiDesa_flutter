@@ -1,3 +1,4 @@
+import 'package:digitalv/widgets/bottom_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -7,7 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../shared/shared.dart';
 import 'dart:math';
 import '../config/globals.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Loginregis extends StatefulWidget {
   const Loginregis({super.key});
@@ -111,14 +112,18 @@ class _LoginregisState extends State<Loginregis> {
       final responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login berhasil')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Login berhasil')));
 
+      String namaPengguna = responseData['master_akun']['nama'];
+        String nikPengguna = responseData['master_akun']['nik'];
+
+        await _saveUserData(namaPengguna, nikPengguna);
       
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Loginregis()), 
+          MaterialPageRoute(builder: (context) => BottomNavBar()), 
         );
       } else if (response.statusCode == 401) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -142,6 +147,12 @@ class _LoginregisState extends State<Loginregis> {
         SnackBar(content: Text('Terjadi kesalahan: $e')),
       );
     }
+  }
+
+  Future<void> _saveUserData(String nama, String nik) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('nama', nama);
+     await prefs.setString('nik', nik);
   }
 
       @override
