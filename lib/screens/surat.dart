@@ -30,6 +30,7 @@ class _SuratScreenState extends State<SuratScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text(
           'LAYANAN SURAT',
           style: TextStyle(
@@ -38,7 +39,7 @@ class _SuratScreenState extends State<SuratScreen> {
             color: Color(0xFF0057A6),
           ),
         ),
-        backgroundColor: Colors.white,
+       
         elevation: 2,
         shadowColor: Colors.black.withOpacity(0.25),
         iconTheme: IconThemeData(color: Colors.black),

@@ -363,7 +363,7 @@ void showRegisterModal(BuildContext context) {
                         hintText: 'Masukkan NIK Anda',
                         border: OutlineInputBorder(),
                       ),
-                      style: const TextStyle(fontSize: 9),
+                      style: const TextStyle(fontSize: 14),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'NIK tidak boleh kosong';
@@ -371,6 +371,9 @@ void showRegisterModal(BuildContext context) {
                         return null;
                       },
                     ),
+
+
+                    
                     const SizedBox(height: 20),
 
                                                 // Password
@@ -393,7 +396,7 @@ void showRegisterModal(BuildContext context) {
                                 hintText: 'Masukkan Password Anda',
                                 border: const OutlineInputBorder(),
                               ),
-                              style: TextStyle(fontSize: 9),
+                              style: TextStyle(fontSize: 14),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Password tidak boleh kosong';
@@ -414,7 +417,7 @@ void showRegisterModal(BuildContext context) {
                         hintText: 'Masukkan E-Mail Anda',
                         border: OutlineInputBorder(),
                       ),
-                      style: const TextStyle(fontSize: 9),
+                      style: const TextStyle(fontSize: 14),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'E-Mail tidak boleh kosong';
@@ -433,7 +436,7 @@ void showRegisterModal(BuildContext context) {
                         hintText: 'Masukkan Nomor HP Anda',
                         border: OutlineInputBorder(),
                       ),
-                      style: const TextStyle(fontSize: 9),
+                      style: const TextStyle(fontSize: 14),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Nomor HP tidak boleh kosong';
@@ -499,7 +502,7 @@ void showRegisterModal(BuildContext context) {
       builder: (context) {
   return DraggableScrollableSheet(
     expand: false,
-    initialChildSize: 0.5, // tinggi awal (60% layar)
+    initialChildSize: 0.5, // tinggi awal 50% layar
     minChildSize: 0.4,     // tinggi minimum
     maxChildSize: 0.9,     // tinggi maksimum bisa ditarik
     builder: (context, scrollController) {

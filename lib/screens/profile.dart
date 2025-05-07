@@ -36,19 +36,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+      backgroundColor: Colors.white,
         title: const Text(
           'PROFILE',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
+            
             color: Color(0xFF0057A6),
           ),
         ),
-        backgroundColor: Colors.white,
         elevation: 2,
         shadowColor: Colors.black.withOpacity(0.25),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
+        backgroundColor: Colors.white,
+
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -62,6 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               child: ElevatedButton(
                 onPressed: () {
+                  
                   showDialog(
                     context: context,
                     builder:
