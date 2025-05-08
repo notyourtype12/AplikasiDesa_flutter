@@ -40,7 +40,7 @@ class StatusTabScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        // backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
         title: Text("STATUS",
             style: TextStyle(

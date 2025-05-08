@@ -52,23 +52,27 @@ class _FormPengajuanState extends State<FormPengajuan> {
         shadowColor: Colors.black.withOpacity(0.25),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
+            
+
         padding: const EdgeInsets.all(16),
+          
         child: Column(
           children: [
-            buildInputField('Nama lengkap', namaController, false),
-            buildInputField('NIK', nikController, false),
-            buildInputField('Tempat Lahir', tempatLahirController, false),
-            buildInputField('Tanggal Lahir', tanggalLahirController, false),
-            buildInputField('Golongan Darah', golDarahController, false),
-            buildInputField('Jenis Kelamin', jkController, false),
-            buildInputField('Kewarganegaraan', kewarganegaraanController, false),
-            buildInputField('Agama', agamaController, false),
-            buildInputField('Status Perkawinan', statusNikahController, false),
-            buildInputField('Status Keluarga', statusKeluargaController, false),
-            buildInputField('Pekerjaan', pekerjaanController, false),
-            buildInputField('Pendidikan', pendidikanController, false),
-            buildInputField('Keperluan', keperluanController, true),
+            buildInputField('Nama lengkap', namaController, readOnly: true),
+            buildInputField('NIK', nikController, readOnly: true),
+            buildInputField('Tempat Lahir', tempatLahirController, readOnly: true),
+            buildInputField('Tanggal Lahir', tanggalLahirController, readOnly: true),
+            buildInputField('Golongan Darah', golDarahController, readOnly: true),
+            buildInputField('Jenis Kelamin', jkController, readOnly: true),
+            buildInputField('Kewarganegaraan', kewarganegaraanController, readOnly: true),
+            buildInputField('Agama', agamaController, readOnly: true),
+            buildInputField('Status Perkawinan', statusNikahController, readOnly: true),
+            buildInputField('Status Keluarga', statusKeluargaController, readOnly: true),
+            buildInputField('Pekerjaan', pekerjaanController, readOnly: true),
+            buildInputField('Pendidikan', pendidikanController, readOnly: true),
+            buildInputField('Keperluan', keperluanController),
             const SizedBox(height: 16),
             buildUploadField('Upload Foto KTP'),
             const SizedBox(height: 26),
@@ -103,16 +107,26 @@ class _FormPengajuanState extends State<FormPengajuan> {
     );
   }
 
-  Widget buildInputField(String label, TextEditingController controller, bool isEnabled) {
+  Widget buildInputField(
+    String label,
+    TextEditingController controller, {
+    bool readOnly = false,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    final Color borderColor = readOnly ? const Color.fromARGB(255, 13, 103, 221) : const Color(0xFF0057A6);
+    final Color textColor = readOnly ? Colors.grey.shade700 : Colors.black;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
         controller: controller,
-        enabled: isEnabled,
+        readOnly: readOnly,
+        keyboardType: keyboardType,
+        style: TextStyle(color: textColor),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(
-            color: Color(0xFF0057A6),
+          labelStyle: TextStyle(
+            color: borderColor,
             fontWeight: FontWeight.bold,
             fontSize: 12,
           ),
@@ -124,15 +138,15 @@ class _FormPengajuanState extends State<FormPengajuan> {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(
-              color: Color(0xFF0057A6),
+            borderSide: BorderSide(
+              color: borderColor,
               width: 1.5,
             ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(
-              color: Color(0xFF0057A6),
+            borderSide: BorderSide(
+              color: borderColor,
               width: 2,
             ),
           ),
@@ -186,12 +200,3 @@ class _FormPengajuanState extends State<FormPengajuan> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
