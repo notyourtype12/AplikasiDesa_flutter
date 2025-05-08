@@ -41,6 +41,7 @@ class StatusTabScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
         title: Text("STATUS",
             style: TextStyle(
               fontSize: 20,

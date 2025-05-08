@@ -31,6 +31,7 @@ class _SuratScreenState extends State<SuratScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
         title: Text(
           'LAYANAN SURAT',
           style: TextStyle(

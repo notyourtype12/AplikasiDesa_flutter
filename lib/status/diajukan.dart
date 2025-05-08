@@ -73,7 +73,7 @@ class PengajuanView extends StatelessWidget {
               final item = pengajuans[index];
               return Card(
                 color: Colors.white, 
-                margin: const EdgeInsets.all(10), // jarak antar carrd tengah
+                margin: const EdgeInsets.all(19), // jarak antar carrd tengah
                 elevation: 3,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),

@@ -447,40 +447,43 @@ void showRegisterModal(BuildContext context) {
                     const SizedBox(height: 20),
 
                     // Tombol Aktivasi
-                    Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            height: 39,
-                            width: 215,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  _register();
-                                }
-                              },
-                              child: const Text(
-                                'Aktivasi akun',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: primaryColor,
-                                shape: RoundedRectangleBorder(
-                                  side: const BorderSide(color: Color(0xFF0057A6), width: 3),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                      ),
-                    ),
+                  Container(
+  margin: const EdgeInsets.only(left: 40),
+  child: Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.start, 
+    children: [
+      SizedBox(
+        height: 50,
+        width: 440,
+        child: ElevatedButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _register();
+            }
+          },
+          child: const Text(
+            'Aktivasi akun',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: primaryColor,
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(color: Color(0xFF0057A6), width: 3),
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+      ),
+      const SizedBox(height: 20),
+    ],
+  ),
+)
+,
                   ],
                 ),
               ),
@@ -570,7 +573,8 @@ void showRegisterModal(BuildContext context) {
               const SizedBox(height: 20),
 
               // Tombol Login
-              Center(
+              Container(
+                margin: const EdgeInsets.only(left: 40),
                 child: SizedBox(
                   height: 50,
                   width: double.infinity,
@@ -587,7 +591,7 @@ void showRegisterModal(BuildContext context) {
                     child: const Text(
                       'Login',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.w500,
                         color: Colors.white,
                       ),

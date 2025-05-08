@@ -9,11 +9,13 @@ class DitolakModel {
   final String nama_surat;
   final String status;
   final String keterangan_ditolak;
+  final String updated_at;
 
   DitolakModel({ 
     required this.nama_surat,
     required this.status,
     required this.keterangan_ditolak,
+    required this.updated_at,
   });
 
 //menampilkan dari json ke ui 
@@ -22,6 +24,7 @@ class DitolakModel {
       nama_surat: json['nama_surat'],
       status: json['status'],
       keterangan_ditolak: json['keterangan_ditolak'],
+      updated_at: json['updated_at'],
     );
   }
 }
@@ -107,6 +110,15 @@ class DitolakView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
+                            "Ditolak Pada: ${item.updated_at}",
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 128, 128, 128),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
                             "Keterangan Ditolak: ${item.keterangan_ditolak}",
                             style: const TextStyle(
                               fontSize: 16,
@@ -117,9 +129,27 @@ class DitolakView extends StatelessWidget {
                           Text(
                             "Status: ${item.status}",
                             style: const TextStyle(
-                              fontSize: 14,
+                              fontSize: 12,
                               color: Color.fromARGB(255, 128, 128, 128),
+                              fontWeight: FontWeight.bold,
                             ),
+                          ),
+                          const SizedBox(height: 8),
+                          
+                           Row(
+                            children: const [
+                              Icon(Icons.delete_outline, 
+                                color: Color.fromARGB(255, 185, 46, 59),
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                "Hapus",
+                                style: TextStyle(
+                                color: Color.fromARGB(255, 185, 46, 59),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
