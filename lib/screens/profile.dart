@@ -36,19 +36,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+      backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
         title: const Text(
           'PROFILE',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
+            
             color: Color(0xFF0057A6),
           ),
         ),
-        backgroundColor: Colors.white,
         elevation: 2,
         shadowColor: Colors.black.withOpacity(0.25),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
+        backgroundColor: Colors.white,
+
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -58,10 +62,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             SizedBox(
               width: double.infinity,
-              height: 40,
+              height: 50,
 
               child: ElevatedButton(
                 onPressed: () {
+                  
                   showDialog(
                     context: context,
                     builder:
@@ -92,23 +97,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFEAF4FD),
+                  
+                  backgroundColor: const Color.fromARGB(74, 255, 0, 0),
+                 
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
+                    
                   ),
                   elevation: 1,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: const [
-                    Icon(Icons.logout_outlined, color: Colors.black, size: 20),
-                    SizedBox(width: 8),
+                    Icon(Icons.logout_outlined, color: Color.fromARGB(255, 255, 255, 255), size: 20),
+                    SizedBox(width: 15),
                     Text(
                       'Keluar',
-                      style: TextStyle(
+                        style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Color.fromARGB(255, 255, 255, 255),
                         fontSize: 16,
                       ),
                     ),
@@ -126,7 +134,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return SizedBox(
       height: 160,
       child: Card(
+        color: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        elevation: 5,
         child: Column(
           children: [
             Padding(

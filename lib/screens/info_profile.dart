@@ -59,6 +59,7 @@ class _InfoProfileState extends State<InfoProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text(
           'Profile',
           style: TextStyle(
@@ -67,7 +68,7 @@ class _InfoProfileState extends State<InfoProfile> {
             color: Color(0xFF0057A6),
           ),
         ),
-        backgroundColor: Colors.white,
+        
         elevation: 2,
         shadowColor: Colors.black.withOpacity(0.25),
         iconTheme: const IconThemeData(color: Colors.black),
@@ -83,7 +84,9 @@ class _InfoProfileState extends State<InfoProfile> {
           ),
         ],
       ),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
+        
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
           children: [
@@ -91,7 +94,7 @@ class _InfoProfileState extends State<InfoProfile> {
               child: Stack(
                 children: [
                   CircleAvatar(
-                    radius: 55,
+                    radius: 55, 
                     backgroundImage:
                         _image != null
                             ? FileImage(_image!)
@@ -106,7 +109,8 @@ class _InfoProfileState extends State<InfoProfile> {
                       child: Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.blueAccent,
+                                      color: Color(0xFF0057A6),
+
                           border: Border.all(color: Colors.white, width: 2),
                         ),
                         padding: const EdgeInsets.all(6),
@@ -158,11 +162,16 @@ class _InfoProfileState extends State<InfoProfile> {
                               'Edit',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.blue,
+                                            color: Color(0xFF0057A6),
+
                               ),
                             ),
                             SizedBox(width: 4),
-                            Icon(Icons.edit, size: 16, color: Colors.blue),
+                            Icon(Icons.edit, size: 16,
+                                                                      color: Color(0xFF0057A6),
+
+
+),
                           ],
                         ),
                       ),
@@ -180,7 +189,7 @@ class _InfoProfileState extends State<InfoProfile> {
           ],
         ),
       ),
-      backgroundColor: const Color(0xFFF5F5F5),
+      
     );
   }
 

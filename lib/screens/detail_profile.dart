@@ -18,10 +18,9 @@ class _DetailProfileState extends State<DetailProfile> {
   @override
   void initState() {
     super.initState();
-    _loadProfileData(); // Load profile data when the screen is initialized
+    _loadProfileData(); 
   }
 
-  // Load data from SharedPreferences
   Future<void> _loadProfileData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -32,6 +31,7 @@ class _DetailProfileState extends State<DetailProfile> {
       emailController.text = prefs.getString('email') ?? 'Belum diatur';
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,40 +49,45 @@ class _DetailProfileState extends State<DetailProfile> {
         shadowColor: Colors.black.withOpacity(0.25),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
+      backgroundColor: const Color(0xFFF5F5F5),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            buildTextField('Nama lengkap', nameController),
             buildTextField('NIK', nikController, readOnly: true),
             buildTextField('No Kartu keluarga', kkController, readOnly: true),
+            buildTextField('Nama lengkap', nameController),
             buildTextField('No Handphone', phoneController),
-            buildTextField('E-mail', emailController, keyboardType: TextInputType.emailAddress),
+            buildTextField(
+              'E-mail',
+              emailController,
+              keyboardType: TextInputType.emailAddress,
+            ),
             const SizedBox(height: 30),
             SizedBox(
               width: 125,
               child: ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Profile berhasil diperbarui')),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0057A6),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  child: const Text(
-                    'Ubah',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Profile berhasil diperbarui')),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0057A6),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
+                child: const Text(
+                  'Ubah',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -94,37 +99,46 @@ class _DetailProfileState extends State<DetailProfile> {
     String label,
     TextEditingController controller, {
     bool readOnly = false,
-    TextInputType? keyboardType,
+    TextInputType keyboardType = TextInputType.text,
   }) {
+    final Color borderColor = readOnly ? const Color.fromARGB(255, 13, 103, 221)  : const Color(0xFF0057A6);
+    final Color textColor = readOnly ? Colors.grey.shade700 : Colors.black;
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: Color(0xFF0057A6),
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextFormField(
+        controller: controller,
+        readOnly: readOnly,
+        keyboardType: keyboardType,
+        style: TextStyle(color: textColor),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(
+            color: borderColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 14,
+            horizontal: 16,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: borderColor,
+              width: 1.5,
             ),
           ),
-          const SizedBox(height: 6),
-          TextField(
-            controller: controller,
-            readOnly: readOnly,
-            keyboardType: keyboardType ?? TextInputType.text,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0xFFF0F6FF),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: borderColor,
+              width: 2,
             ),
           ),
-        ],
+        ),
       ),
     );
   }

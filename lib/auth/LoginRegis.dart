@@ -363,7 +363,7 @@ void showRegisterModal(BuildContext context) {
                         hintText: 'Masukkan NIK Anda',
                         border: OutlineInputBorder(),
                       ),
-                      style: const TextStyle(fontSize: 9),
+                      style: const TextStyle(fontSize: 14),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'NIK tidak boleh kosong';
@@ -371,6 +371,9 @@ void showRegisterModal(BuildContext context) {
                         return null;
                       },
                     ),
+
+
+                    
                     const SizedBox(height: 20),
 
                                                 // Password
@@ -393,7 +396,7 @@ void showRegisterModal(BuildContext context) {
                                 hintText: 'Masukkan Password Anda',
                                 border: const OutlineInputBorder(),
                               ),
-                              style: TextStyle(fontSize: 9),
+                              style: TextStyle(fontSize: 14),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Password tidak boleh kosong';
@@ -414,7 +417,7 @@ void showRegisterModal(BuildContext context) {
                         hintText: 'Masukkan E-Mail Anda',
                         border: OutlineInputBorder(),
                       ),
-                      style: const TextStyle(fontSize: 9),
+                      style: const TextStyle(fontSize: 14),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'E-Mail tidak boleh kosong';
@@ -433,7 +436,7 @@ void showRegisterModal(BuildContext context) {
                         hintText: 'Masukkan Nomor HP Anda',
                         border: OutlineInputBorder(),
                       ),
-                      style: const TextStyle(fontSize: 9),
+                      style: const TextStyle(fontSize: 14),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Nomor HP tidak boleh kosong';
@@ -444,40 +447,43 @@ void showRegisterModal(BuildContext context) {
                     const SizedBox(height: 20),
 
                     // Tombol Aktivasi
-                    Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            height: 39,
-                            width: 215,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  _register();
-                                }
-                              },
-                              child: const Text(
-                                'Aktivasi akun',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: primaryColor,
-                                shape: RoundedRectangleBorder(
-                                  side: const BorderSide(color: Color(0xFF0057A6), width: 3),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                      ),
-                    ),
+                  Container(
+  margin: const EdgeInsets.only(left: 40),
+  child: Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.start, 
+    children: [
+      SizedBox(
+        height: 50,
+        width: 440,
+        child: ElevatedButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _register();
+            }
+          },
+          child: const Text(
+            'Aktivasi akun',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: primaryColor,
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(color: Color(0xFF0057A6), width: 3),
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+      ),
+      const SizedBox(height: 20),
+    ],
+  ),
+)
+,
                   ],
                 ),
               ),
@@ -499,7 +505,7 @@ void showRegisterModal(BuildContext context) {
       builder: (context) {
   return DraggableScrollableSheet(
     expand: false,
-    initialChildSize: 0.5, // tinggi awal (60% layar)
+    initialChildSize: 0.5, // tinggi awal 50% layar
     minChildSize: 0.4,     // tinggi minimum
     maxChildSize: 0.9,     // tinggi maksimum bisa ditarik
     builder: (context, scrollController) {
@@ -567,7 +573,8 @@ void showRegisterModal(BuildContext context) {
               const SizedBox(height: 20),
 
               // Tombol Login
-              Center(
+              Container(
+                margin: const EdgeInsets.only(left: 40),
                 child: SizedBox(
                   height: 50,
                   width: double.infinity,
@@ -584,7 +591,7 @@ void showRegisterModal(BuildContext context) {
                     child: const Text(
                       'Login',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.w500,
                         color: Colors.white,
                       ),

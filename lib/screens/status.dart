@@ -40,13 +40,48 @@ class StatusTabScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("STATUS"),
+        // backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        title: Text("STATUS",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            color: Color(0xFF0057A6),
+            )),
         bottom: TabBar(
           controller: controller.tabController,
+          indicatorColor: Color(0xFF0057A6), //warna garis bawah
           tabs: const [
-            Tab(text: "Diajukan"),
-            Tab(text: "Disetujui"),
-            Tab(text: "Ditolak"),
+            Tab(
+              child: Text(
+                "Diajukan",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0057A6),
+                ),
+              ),
+            ),
+            Tab(
+              child: Text(
+                "Disetujui",
+               style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0057A6),
+              ),
+              ),
+            ),
+            Tab(
+              child: Text(
+              "Ditolak",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0057A6),
+              ),
+              ),
+            ),
           ],
         ),
       ),
