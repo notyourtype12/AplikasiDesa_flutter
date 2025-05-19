@@ -1,9 +1,28 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:digitalv/auth/LoginRegis.dart';
+import 'package:http/http.dart' as http;
+import '../auth/LoginRegis.dart';
+import '../config/globals.dart';
+import 'package:digitalv/widgets/snackbarcustom.dart';
 
 class ResetPasswordController extends ChangeNotifier {
+  String email = '';
+  String otp = '';
   String newPassword = '';
   String confirmPassword = '';
+  bool _isLoading = false;
+
+  bool get isLoading => _isLoading;
+
+  void setEmail(String value) {
+    email = value;
+    notifyListeners();
+  }
+
+  void setOtp(String value) {
+    otp = value;
+    notifyListeners();
+  }
 
   void setNewPassword(String value) {
     newPassword = value;
@@ -15,32 +34,88 @@ class ResetPasswordController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void resetPassword(BuildContext context) {
+  Future<void> resetPassword(
+    BuildContext context, {
+    required void Function({
+      required String message,
+      required Color backgroundColor,
+      IconData? icon,
+    })
+    showSnackbar,
+  }) async {
     if (newPassword.isEmpty || confirmPassword.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Password tidak boleh kosong")),
+      showSnackbar(
+        message: "Password tidak boleh kosong",
+        backgroundColor: Colors.red,
+        icon: Icons.error,
+      );
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      showSnackbar(
+        message: "Password minimal 8 karakter",
+        backgroundColor: Colors.red,
+        icon: Icons.error,
       );
       return;
     }
 
     if (newPassword != confirmPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Password tidak cocok")),
+      showSnackbar(
+        message: "Password tidak cocok",
+        backgroundColor: Colors.red,
+        icon: Icons.error,
       );
       return;
     }
 
-    // TODO: Panggil API / proses update password di sini
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Password berhasil direset")),
-    );
+    _isLoading = true;
+    notifyListeners();
 
-    // Arahkan ke halaman login setelah delay
-    Future.delayed(const Duration(seconds: 5), () {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => Loginregis()),
-        (route) => false,
+    try {
+      final response = await http.post(
+        Uri.parse('$baseURL/reset-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'email': email,
+          'otp': otp,
+          'password': newPassword,
+          'password_confirmation': confirmPassword,
+        }),
       );
-    });
+
+      final data = json.decode(response.body);
+
+      if (response.statusCode == 200 && data['status'] == 200) {
+        showSnackbar(
+          message: data['message'] ?? 'Password berhasil direset',
+          backgroundColor: Colors.green,
+          icon: Icons.check_circle,
+        );
+
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => Loginregis()),
+            (route) => false,
+          );
+        });
+      } else {
+        showSnackbar(
+          message: data['message'] ?? 'Reset password gagal',
+          backgroundColor: Colors.red,
+          icon: Icons.error,
+        );
+      }
+    } catch (e) {
+      showSnackbar(
+        message: "Terjadi kesalahan: $e",
+        backgroundColor: Colors.red,
+        icon: Icons.error,
+      );
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

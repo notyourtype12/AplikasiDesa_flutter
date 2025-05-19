@@ -9,38 +9,132 @@ import '../controllers/SuratController.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:digitalv/widgets/snackbarcustom.dart';
 
-class FormKematian extends StatefulWidget {
-  const FormKematian({super.key});
+class FormAktaPerkawinan extends StatefulWidget {
+  const FormAktaPerkawinan({super.key});
 
   @override
-  State<FormKematian> createState() => _FormKematianState();
+  State<FormAktaPerkawinan> createState() => _FormAktaState();
 }
 
-class _FormKematianState extends State<FormKematian> {
+class _FormAktaState extends State<FormAktaPerkawinan> {
   final TextEditingController namaController = TextEditingController();
   final TextEditingController nikController = TextEditingController();
   final TextEditingController tempatLahirController = TextEditingController();
   final TextEditingController tanggalLahirController = TextEditingController();
   final TextEditingController golDarahController = TextEditingController();
   final TextEditingController jkController = TextEditingController();
-  final TextEditingController kewarganegaraanController =  TextEditingController();
+  final TextEditingController kewarganegaraanController =
+      TextEditingController();
   final TextEditingController agamaController = TextEditingController();
   // final TextEditingController statusNikahController = TextEditingController(text: 'Belum Kawin');
-  final TextEditingController statusKeluargaController = TextEditingController();
+  final TextEditingController statusKeluargaController =
+      TextEditingController();
   final TextEditingController pekerjaanController = TextEditingController();
   final TextEditingController pendidikanController = TextEditingController();
   final TextEditingController keperluanController = TextEditingController();
-    bool isLoading = false;
+  bool isLoading = false;
 
-  File? _foto1; // foto kk
-  File? _foto2; // surat kematian
-  File? _foto3; // ktp pelapor
-  File? _foto4; // ktp terlapor
+  File? _foto1;
+  File? _foto2;
+  File? _foto3;
+  File? _foto4;
+  File? _foto5;
+  File? _foto6;
+  File? _foto7;
+  File? _foto8;
+  File? _foto9;
 
   @override
   void initState() {
     super.initState();
     _loadUserData(); // ← ini penting!
+  }
+
+  Future<void> _submitForm() async {
+    setState(() => isLoading = true);
+
+    final uri = Uri.parse('$baseURL/pengajuan');
+    final request = http.MultipartRequest('POST', uri);
+
+    request.fields['id_surat'] = 'S2025-004';
+    request.fields['nik'] = nikController.text;
+    request.fields['keperluan'] = keperluanController.text;
+    request.fields['tanggal_diajukan'] = DateTime.now().toIso8601String();
+
+    Future<void> addFile(String fieldName, File? file) async {
+      if (file != null) {
+        // print('📎 Upload file: $fieldName → ${file.path}');
+        request.files.add(
+          await http.MultipartFile.fromPath(fieldName, file.path),
+        );
+        // } else {
+        //   print('⚠️ File $fieldName tidak dipilih.');
+      }
+    }
+
+    await addFile('foto1', _foto1);
+    await addFile('foto2', _foto2);
+    await addFile('foto3', _foto3);
+    await addFile('foto4', _foto4);
+    await addFile('foto5', _foto5);
+    await addFile('foto6', _foto6);
+    await addFile('foto7', _foto7);
+    await addFile('foto8', _foto8);
+    await addFile('foto9', _foto9);
+
+    try {
+      final response = await request.send();
+      final res = await http.Response.fromStream(response);
+
+      // print('📥 Status Code: ${res.statusCode}');
+      // print('📥 Response Body: ${res.body}');
+
+      if (res.statusCode == 200) {
+        showCustomSnackbar(
+          context: context,
+          message: 'Pengajuan berhasil dikirim!',
+          backgroundColor: Colors.green,
+          icon: Icons.check_circle,
+        );
+      } else {
+        String errorMessage = 'Gagal mengirim pengajuan.';
+        try {
+          final responseData = jsonDecode(res.body);
+
+          if (responseData is Map) {
+            if (responseData.containsKey('errors')) {
+              errorMessage = responseData['errors'].values
+                  .map((errList) => (errList as List).join(', '))
+                  .join('\n');
+            } else if (responseData.containsKey('message')) {
+              errorMessage = responseData['message'];
+              //     } else {
+              //       errorMessage = 'Terjadi kesalahan: ${res.body}';
+              //     }
+              //   } else {
+              //     errorMessage = 'Response tidak dikenal: ${res.body}';
+              //   }
+            }
+          }
+        } catch (e) {
+          errorMessage = 'Response bukan JSON. Isi:\n${res.body}';
+        }
+
+        showCustomSnackbar(
+          context: context,
+          message: errorMessage,
+          backgroundColor: Colors.red,
+          icon: Icons.error,
+        );
+      }
+    } catch (e) {
+      showCustomSnackbar(
+        context: context,
+        message: 'Terjadi kesalahan saat mengirim: $e',
+        backgroundColor: Colors.red,
+        icon: Icons.error,
+      );
+    }
   }
 
   Future<void> _loadUserData() async {
@@ -62,85 +156,12 @@ class _FormKematianState extends State<FormKematian> {
     }
   }
 
-   Future<void> _submitForm() async {
-    setState(() => isLoading = true); // Aktifkan loading
-
-    final uri = Uri.parse('$baseURL/pengajuan');
-    final request = http.MultipartRequest('POST', uri);
-
-    request.fields['id_surat'] = 'S2025-001';
-    request.fields['nik'] = nikController.text;
-    request.fields['keperluan'] = keperluanController.text;
-    request.fields['tanggal_diajukan'] = DateTime.now().toIso8601String();
-
-    Future<void> addFile(String fieldName, File? file) async {
-      if (file != null) {
-        request.files.add(
-          await http.MultipartFile.fromPath(fieldName, file.path),
-        );
-      }
-    }
-
-    await addFile('foto1', _foto1);
-    await addFile('foto2', _foto2);
-    await addFile('foto3', _foto3);
-    await addFile('foto4', _foto4);
-
-    try {
-      final response = await request.send();
-      final res = await http.Response.fromStream(response);
-
-      if (res.statusCode == 200) {
-        showCustomSnackbar(
-          context: context,
-          message: 'Pengajuan berhasil dikirim!',
-          backgroundColor: Colors.green,
-          icon: Icons.check_circle,
-        );
-      } else {
-        String errorMessage = 'Gagal mengirim pengajuan.';
-        try {
-          final responseData = jsonDecode(res.body);
-          if (responseData is Map) {
-            if (responseData.containsKey('errors')) {
-              errorMessage = responseData['errors'].values
-                  .map((errList) => (errList as List).join(', '))
-                  .join('\n');
-            } else if (responseData.containsKey('message')) {
-              errorMessage = responseData['message'];
-            }
-          }
-        } catch (_) {
-          errorMessage = 'Response bukan JSON. Isi:\n${res.body}';
-        }
-
-        showCustomSnackbar(
-          context: context,
-          message: errorMessage,
-          backgroundColor: Colors.red,
-          icon: Icons.error,
-        );
-      }
-    } catch (e) {
-      showCustomSnackbar(
-        context: context,
-        message: 'Terjadi kesalahan saat mengirim: $e',
-        backgroundColor: Colors.red,
-        icon: Icons.error,
-      );
-    }
-
-    setState(() => isLoading = false); // Nonaktifkan loading
-  }
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'PENGAJUAN  KEMATIAN',
+          'PENGAJUAN AKTA PERKAWINAN',
           style: GoogleFonts.poppins(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -190,27 +211,60 @@ class _FormKematianState extends State<FormKematian> {
             ),
             buildInputField('Pekerjaan', pekerjaanController, readOnly: true),
             buildInputField('Pendidikan', pendidikanController, readOnly: true),
-            buildInputField('Nama Almarhum', keperluanController),
+            buildInputField('Keperluan', keperluanController),
             const SizedBox(height: 16),
-           buildUploadField('Kartu Keluarga', _foto1, (file) {
+            buildUploadField('KTP Suami', _foto1, (file) {
               setState(() => _foto1 = file);
             }),
             const SizedBox(height: 16),
 
-            buildUploadField('Surat Kematian dari Rumah Sakit atau Desa', _foto2, (file) {
+            buildUploadField('KTP Istri', _foto2, (file) {
               setState(() => _foto2 = file);
             }),
             const SizedBox(height: 16),
 
-            buildUploadField('KTP Pelapor', _foto3, (file) {
+            buildUploadField('Kartu Keluarga', _foto3, (file) {
               setState(() => _foto3 = file);
             }),
             const SizedBox(height: 16),
 
-            buildUploadField('KTP Terlapor (Yang Meninggal)', _foto4, (file) {
+            buildUploadField('Akta Kelahiran Suami', _foto4, (file) {
               setState(() => _foto4 = file);
             }),
-            
+            const SizedBox(height: 16),
+
+            buildUploadField('Akta Kelahiran Istri', _foto5, (file) {
+              setState(() => _foto5 = file);
+            }),
+            const SizedBox(height: 16),
+
+            buildUploadField('Foto Ijazah Suami', _foto6, (file) {
+              setState(() => _foto6 = file);
+            }),
+            const SizedBox(height: 16),
+
+            buildUploadField('Foto Ijazah Istri', _foto7, (file) {
+              setState(() => _foto7 = file);
+            }),
+            const SizedBox(height: 16),
+
+            // buildUploadField('Pas Foto Background Biru 2x6', _foto5, (file) {
+            //   setState(() => _foto5 = file);
+            // }),
+            // const SizedBox(height: 16),
+            buildUploadField('Pas Foto Background Biru 4x6 (Suami)', _foto8, (
+              file,
+            ) {
+              setState(() => _foto8 = file);
+            }),
+            const SizedBox(height: 16),
+
+            buildUploadField('Pas Foto Background Biru 4x6 (Istri)', _foto9, (
+              file,
+            ) {
+              setState(() => _foto9 = file);
+            }),
+
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
@@ -269,7 +323,7 @@ class _FormKematianState extends State<FormKematian> {
         controller: controller,
         readOnly: readOnly,
         keyboardType: keyboardType,
-       style: GoogleFonts.poppins(color: Colors.black, fontSize: 12),
+        style: GoogleFonts.poppins(color: Colors.black, fontSize: 12),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(

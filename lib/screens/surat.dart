@@ -1,4 +1,11 @@
+import 'package:digitalv/screens/form_aktakelahiran.dart';
+import 'package:digitalv/screens/form_aktaperkawinan.dart';
+import 'package:digitalv/screens/form_kartukeluarga.dart';
 import 'package:digitalv/screens/form_kematian.dart';
+import 'package:digitalv/screens/form_ktp.dart';
+import 'package:digitalv/screens/form_pindahpenduduk.dart';
+import 'package:digitalv/screens/form_sktm.dart';
+import 'package:digitalv/screens/form_suratmiskin.dart';
 import 'package:flutter/material.dart';
 import '../screens/form_pengajuan.dart';
 
@@ -66,7 +73,7 @@ class _SuratScreenState extends State<SuratScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FormPengajuan()),
+                  MaterialPageRoute(builder: (context) => FormAktakelahiran()),
                 );
               },
             ),
@@ -80,7 +87,7 @@ class _SuratScreenState extends State<SuratScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FormKematian()),
+                  MaterialPageRoute(builder: (context) => FormKartukeluarga()),
                 );
               },
             ),
@@ -94,7 +101,7 @@ class _SuratScreenState extends State<SuratScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FormPengajuan()),
+                  MaterialPageRoute(builder: (context) => FormKtp()),
                 );
               },
             ),
@@ -108,7 +115,7 @@ class _SuratScreenState extends State<SuratScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FormPengajuan()),
+                  MaterialPageRoute(builder: (context) => FormSktm()),
                 );
               },
             ),
@@ -122,7 +129,7 @@ class _SuratScreenState extends State<SuratScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FormPengajuan()),
+                  MaterialPageRoute(builder: (context) => FormAktaPerkawinan()),
                 );
               },
             ),
@@ -136,7 +143,7 @@ class _SuratScreenState extends State<SuratScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FormPengajuan()),
+                  MaterialPageRoute(builder: (context) => FormKematian()),
                 );
               },
             ),
@@ -150,7 +157,7 @@ class _SuratScreenState extends State<SuratScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FormPengajuan()),
+                  MaterialPageRoute(builder: (context) => FormPindahpenduduk()),
                 );
               },
             ),
@@ -164,7 +171,7 @@ class _SuratScreenState extends State<SuratScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FormPengajuan()),
+                  MaterialPageRoute(builder: (context) => FormSuratmiskin()),
                 );
               },
             ),

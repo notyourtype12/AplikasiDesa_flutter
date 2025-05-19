@@ -1,9 +1,17 @@
+import 'package:digitalv/screens/form_aktakelahiran.dart';
+import 'package:digitalv/screens/form_aktaperkawinan.dart';
+import 'package:digitalv/screens/form_kartukeluarga.dart';
+import 'package:digitalv/screens/form_ktp.dart';
+import 'package:digitalv/screens/form_pindahpenduduk.dart';
+import 'package:digitalv/screens/form_sktm.dart';
+import 'package:digitalv/screens/form_suratmiskin.dart';
 import 'package:flutter/material.dart';
 import 'package:digitalv/screens/pengaduan.dart';
 import 'package:digitalv/screens/form_pengajuan.dart';
 import 'package:digitalv/screens/form_kematian.dart';
 import 'package:digitalv/screens/info_berita.dart';
 import 'package:digitalv/screens/detail_berita.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -11,9 +19,12 @@ class HomeScreen extends StatefulWidget {
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
+  
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _isNavigating = false;
+
   final List<Map<String, dynamic>> layanan = [
     {
       'icon': Icons.insert_drive_file,
@@ -100,25 +111,38 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0057A6),
-      body: SafeArea(
+      backgroundColor:  Colors.white,
+      body: SingleChildScrollView(
         child: SingleChildScrollView(
+          
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
+
+                decoration: const BoxDecoration(
+                  color: Color(0xFF0057A6), // warna biru
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  ),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Selamat Datang,',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      style: GoogleFonts.poppins(
+                        color: Colors.white, 
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600),
                     ),
                     SizedBox(height: 5),
                     Text(
-                      'User!',
-                      style: TextStyle(
+                       '$namaUser!',
+                      style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -130,7 +154,9 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
               Container(
                 width: double.infinity,
+                
                 padding: const EdgeInsets.all(20),
+                
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
@@ -214,15 +240,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 25),
-                    const Text(
+                    const SizedBox(height: 15),
+                     Text(
                       'Kategori Layanan',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 15),
+                    // const SizedBox(height: 15),
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -230,30 +256,56 @@ class _HomeScreenState extends State<HomeScreen> {
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 4,
-                            mainAxisSpacing: 10,
-                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 8,
+                            crossAxisSpacing: 8,
                             childAspectRatio: 1,
                           ),
                       itemBuilder: (context, index) {
                         final item = layanan[index];
                         final backgroundColor = tintColor(item['color']);
                         return GestureDetector(
-                          onTap: () {
-                            if (index == 5) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => FormKematian(),
-                                ),
-                              );
-                            } else {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => FormPengajuan(),
-                                ),
-                              );
+                          onTap: () async  {
+                            if (_isNavigating) return; // Cegah push ganda
+                              _isNavigating = true;
+                            Widget targetPage;
+
+                            switch (index) {
+                              case 0:
+                                targetPage = FormAktakelahiran();
+                                break;
+                              case 1:
+                                targetPage = FormKartukeluarga();
+                                break;
+                              case 2:
+                                targetPage = FormKtp();
+                                break;
+                              case 3:
+                                targetPage = FormSktm();
+                                break;
+                              case 4:
+                                targetPage = FormAktaPerkawinan();
+                                break;
+                              case 5:
+                                targetPage = FormKematian();
+                                break;
+                              case 6:
+                                targetPage = FormPindahpenduduk();
+                                break;
+                              case 7:
+                                targetPage = FormSuratmiskin();
+                                break;
+                              default:
+                                _isNavigating = false;
+                                return; // tidak ada aksi
                             }
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => targetPage),
+                        );
+
+                        _isNavigating = false; // aktifkan kembali setelah kembali dari push
+
+
                           },
                           child: Column(
                             children: [
@@ -276,6 +328,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       },
                     ),
+                    
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -291,7 +344,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const InfoBerita(),
+                                builder: (context) =>  InfoBerita(),
                               ),
                             );
                           },
@@ -327,17 +380,21 @@ class _HomeScreenState extends State<HomeScreen> {
                           final item = berita[index];
                           return GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DetailBerita(
-                                    judul: item['judul']!,
-                                    tanggal: item['tanggal']!,
-                                    gambar: item['gambar']!,
-                                  ),
-                                ),
-                              );
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder:
+                              //         (context) => DetailBerita(
+                                      
+                              //           judul: item['judul']!,
+                              //           tanggal: item['tanggal']!,
+                              //           gambar: item['gambar']!,
+                              //         ),
+                              //   ),
+                              // );
+
                             },
+                            
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: Stack(

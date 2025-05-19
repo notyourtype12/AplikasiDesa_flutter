@@ -9,33 +9,38 @@ import '../controllers/SuratController.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:digitalv/widgets/snackbarcustom.dart';
 
-class FormKematian extends StatefulWidget {
-  const FormKematian({super.key});
+class FormKartukeluarga extends StatefulWidget {
+  const FormKartukeluarga({super.key});
 
   @override
-  State<FormKematian> createState() => _FormKematianState();
+  State<FormKartukeluarga> createState() => _FormAktaState();
 }
 
-class _FormKematianState extends State<FormKematian> {
+class _FormAktaState extends State<FormKartukeluarga> {
   final TextEditingController namaController = TextEditingController();
   final TextEditingController nikController = TextEditingController();
   final TextEditingController tempatLahirController = TextEditingController();
   final TextEditingController tanggalLahirController = TextEditingController();
   final TextEditingController golDarahController = TextEditingController();
   final TextEditingController jkController = TextEditingController();
-  final TextEditingController kewarganegaraanController =  TextEditingController();
+  final TextEditingController kewarganegaraanController = TextEditingController();
   final TextEditingController agamaController = TextEditingController();
   // final TextEditingController statusNikahController = TextEditingController(text: 'Belum Kawin');
   final TextEditingController statusKeluargaController = TextEditingController();
   final TextEditingController pekerjaanController = TextEditingController();
   final TextEditingController pendidikanController = TextEditingController();
   final TextEditingController keperluanController = TextEditingController();
-    bool isLoading = false;
+   bool isLoading = false;
 
   File? _foto1; // foto kk
-  File? _foto2; // surat kematian
-  File? _foto3; // ktp pelapor
-  File? _foto4; // ktp terlapor
+  File? _foto2; // buku nikah atau cerai
+  File? _foto3; // akta kelahiran anggota 1
+  File? _foto4; // akta kelahiran anggota 2
+  File? _foto5; // akta kelahiran anggota 3
+  File? _foto6; // akta kelahiran anggota 4
+  File? _foto7; // akta kelahiran anggota 5
+  File? _foto8; // akta kelahiran anggota 6
+  File? _foto9; // akta kelahiran anggota 7
 
   @override
   void initState() {
@@ -61,23 +66,25 @@ class _FormKematianState extends State<FormKematian> {
       });
     }
   }
-
-   Future<void> _submitForm() async {
-    setState(() => isLoading = true); // Aktifkan loading
+  Future<void> _submitForm() async {
+    setState(() => isLoading = true);
 
     final uri = Uri.parse('$baseURL/pengajuan');
     final request = http.MultipartRequest('POST', uri);
 
-    request.fields['id_surat'] = 'S2025-001';
+    request.fields['id_surat'] = 'S2025-004';
     request.fields['nik'] = nikController.text;
     request.fields['keperluan'] = keperluanController.text;
     request.fields['tanggal_diajukan'] = DateTime.now().toIso8601String();
 
     Future<void> addFile(String fieldName, File? file) async {
       if (file != null) {
+        // print('📎 Upload file: $fieldName → ${file.path}');
         request.files.add(
           await http.MultipartFile.fromPath(fieldName, file.path),
         );
+        // } else {
+        //   print('⚠️ File $fieldName tidak dipilih.');
       }
     }
 
@@ -85,10 +92,18 @@ class _FormKematianState extends State<FormKematian> {
     await addFile('foto2', _foto2);
     await addFile('foto3', _foto3);
     await addFile('foto4', _foto4);
+    await addFile('foto5', _foto5);
+    await addFile('foto6', _foto6);
+    await addFile('foto7', _foto7);
+    await addFile('foto8', _foto8);
+    await addFile('foto9', _foto9);
 
     try {
       final response = await request.send();
       final res = await http.Response.fromStream(response);
+
+      // print('📥 Status Code: ${res.statusCode}');
+      // print('📥 Response Body: ${res.body}');
 
       if (res.statusCode == 200) {
         showCustomSnackbar(
@@ -101,6 +116,7 @@ class _FormKematianState extends State<FormKematian> {
         String errorMessage = 'Gagal mengirim pengajuan.';
         try {
           final responseData = jsonDecode(res.body);
+
           if (responseData is Map) {
             if (responseData.containsKey('errors')) {
               errorMessage = responseData['errors'].values
@@ -108,9 +124,15 @@ class _FormKematianState extends State<FormKematian> {
                   .join('\n');
             } else if (responseData.containsKey('message')) {
               errorMessage = responseData['message'];
+              //     } else {
+              //       errorMessage = 'Terjadi kesalahan: ${res.body}';
+              //     }
+              //   } else {
+              //     errorMessage = 'Response tidak dikenal: ${res.body}';
+              //   }
             }
           }
-        } catch (_) {
+        } catch (e) {
           errorMessage = 'Response bukan JSON. Isi:\n${res.body}';
         }
 
@@ -129,18 +151,14 @@ class _FormKematianState extends State<FormKematian> {
         icon: Icons.error,
       );
     }
-
-    setState(() => isLoading = false); // Nonaktifkan loading
   }
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'PENGAJUAN  KEMATIAN',
+        title:  Text(
+          'PENGAJUAN KARTU KELUARGA',
           style: GoogleFonts.poppins(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -190,27 +208,54 @@ class _FormKematianState extends State<FormKematian> {
             ),
             buildInputField('Pekerjaan', pekerjaanController, readOnly: true),
             buildInputField('Pendidikan', pendidikanController, readOnly: true),
-            buildInputField('Nama Almarhum', keperluanController),
+            buildInputField('Keperluan', keperluanController),
             const SizedBox(height: 16),
-           buildUploadField('Kartu Keluarga', _foto1, (file) {
+           buildUploadField('Kartu Keluarga (jika hilang melampirkan surat kehilangan kk dari Polsek)', _foto1, (file) {
               setState(() => _foto1 = file);
             }),
             const SizedBox(height: 16),
 
-            buildUploadField('Surat Kematian dari Rumah Sakit atau Desa', _foto2, (file) {
+           buildUploadField('Buku Nikah atau Foto Status Cerai (jika status pernikahan cerai)', _foto2, (file) {
               setState(() => _foto2 = file);
             }),
             const SizedBox(height: 16),
 
-            buildUploadField('KTP Pelapor', _foto3, (file) {
+           buildUploadField('Akta Kelahiran Anggota Keluarga 1', _foto3, (file) {
               setState(() => _foto3 = file);
             }),
             const SizedBox(height: 16),
 
-            buildUploadField('KTP Terlapor (Yang Meninggal)', _foto4, (file) {
+            buildUploadField('Akta Kelahiran Anggota Keluarga 2', _foto4, (file) {
               setState(() => _foto4 = file);
             }),
-            
+            const SizedBox(height: 16),
+
+            buildUploadField('Akta Kelahiran Anggota Keluarga 3 (Opsional)', _foto5, (file) {
+              setState(() => _foto5 = file);
+            }),
+            const SizedBox(height: 16),
+
+            buildUploadField('Akta Kelahiran Anggota Keluarga 4 (Opsional)', _foto6, (file) {
+              setState(() => _foto6 = file);
+            }),
+
+            const SizedBox(height: 16),
+            buildUploadField('Akta Kelahiran Anggota Keluarga 5 (Opsional)', _foto7, (file) {
+              setState(() => _foto7 = file);
+            }),
+            const SizedBox(height: 16),
+
+            const SizedBox(height: 16),
+            buildUploadField('Akta Kelahiran Anggota Keluarga 6 (Opsional)', _foto8, (file) {
+              setState(() => _foto8 = file);
+            }),
+            const SizedBox(height: 16),
+
+            buildUploadField('Akta Kelahiran Anggota Keluarga 7 (Opsional)', _foto9, (file) {
+              setState(() => _foto9 = file);
+            }),
+
+
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,

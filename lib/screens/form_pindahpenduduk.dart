@@ -9,14 +9,14 @@ import '../controllers/SuratController.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:digitalv/widgets/snackbarcustom.dart';
 
-class FormPengajuan extends StatefulWidget {
-  const FormPengajuan({super.key});
+class FormPindahpenduduk extends StatefulWidget {
+  const FormPindahpenduduk({super.key});
 
   @override
-  State<FormPengajuan> createState() => _FormPengajuanState();
+  State<FormPindahpenduduk> createState() => _FormPindahpendudukState();
 }
 
-class _FormPengajuanState extends State<FormPengajuan> {
+class _FormPindahpendudukState extends State<FormPindahpenduduk> {
   final TextEditingController namaController = TextEditingController();
   final TextEditingController nikController = TextEditingController();
   final TextEditingController tempatLahirController = TextEditingController();
@@ -30,8 +30,11 @@ class _FormPengajuanState extends State<FormPengajuan> {
   final TextEditingController pekerjaanController = TextEditingController();
   final TextEditingController pendidikanController = TextEditingController();
   final TextEditingController keperluanController = TextEditingController();
+  bool isLoading = false;
 
   File? _foto1; // foto kk
+  File? _foto2; // buku nikah
+  File? _foto3; // tujuan pindah
 
   @override
   void initState() {
@@ -58,13 +61,84 @@ class _FormPengajuanState extends State<FormPengajuan> {
     }
   }
 
+  Future<void> _submitForm() async {
+    setState(() => isLoading = true); // Aktifkan loading
+
+    final uri = Uri.parse('$baseURL/pengajuan');
+    final request = http.MultipartRequest('POST', uri);
+
+    request.fields['id_surat'] = 'S2025-001';
+    request.fields['nik'] = nikController.text;
+    request.fields['keperluan'] = keperluanController.text;
+    request.fields['tanggal_diajukan'] = DateTime.now().toIso8601String();
+
+    Future<void> addFile(String fieldName, File? file) async {
+      if (file != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(fieldName, file.path),
+        );
+      }
+    }
+
+    await addFile('foto1', _foto1);
+    await addFile('foto2', _foto2);
+    await addFile('foto3', _foto3);
+
+    try {
+      final response = await request.send();
+      final res = await http.Response.fromStream(response);
+
+      if (res.statusCode == 200) {
+        showCustomSnackbar(
+          context: context,
+          message: 'Pengajuan berhasil dikirim!',
+          backgroundColor: Colors.green,
+          icon: Icons.check_circle,
+        );
+      } else {
+        String errorMessage = 'Gagal mengirim pengajuan.';
+        try {
+          final responseData = jsonDecode(res.body);
+          if (responseData is Map) {
+            if (responseData.containsKey('errors')) {
+              errorMessage = responseData['errors'].values
+                  .map((errList) => (errList as List).join(', '))
+                  .join('\n');
+            } else if (responseData.containsKey('message')) {
+              errorMessage = responseData['message'];
+            }
+          }
+        } catch (_) {
+          errorMessage = 'Response bukan JSON. Isi:\n${res.body}';
+        }
+
+        showCustomSnackbar(
+          context: context,
+          message: errorMessage,
+          backgroundColor: Colors.red,
+          icon: Icons.error,
+        );
+      }
+    } catch (e) {
+      showCustomSnackbar(
+        context: context,
+        message: 'Terjadi kesalahan saat mengirim: $e',
+        backgroundColor: Colors.red,
+        icon: Icons.error,
+      );
+    }
+
+    setState(() => isLoading = false); // Nonaktifkan loading
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'FORM PENGAJUAN',
-         style: GoogleFonts.poppins(
+          'PENGAJUAN PINDAH PENDUDUK',
+          style: GoogleFonts.poppins(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Color(0xFF0057A6),
@@ -77,38 +151,62 @@ class _FormPengajuanState extends State<FormPengajuan> {
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-            
-
         padding: const EdgeInsets.all(16),
-          
+
         child: Column(
           children: [
             buildInputField('Nama lengkap', namaController, readOnly: true),
             buildInputField('NIK', nikController, readOnly: true),
-            buildInputField('Tempat Lahir', tempatLahirController, readOnly: true),
-            buildInputField('Tanggal Lahir', tanggalLahirController, readOnly: true),
-            buildInputField('Golongan Darah', golDarahController, readOnly: true),
+            buildInputField(
+              'Tempat Lahir',
+              tempatLahirController,
+              readOnly: true,
+            ),
+            buildInputField(
+              'Tanggal Lahir',
+              tanggalLahirController,
+              readOnly: true,
+            ),
+            buildInputField(
+              'Golongan Darah',
+              golDarahController,
+              readOnly: true,
+            ),
             buildInputField('Jenis Kelamin', jkController, readOnly: true),
-            buildInputField('Kewarganegaraan', kewarganegaraanController, readOnly: true),
+            buildInputField(
+              'Kewarganegaraan',
+              kewarganegaraanController,
+              readOnly: true,
+            ),
             buildInputField('Agama', agamaController, readOnly: true),
             // buildInputField('Status Perkawinan', statusNikahController, readOnly: true),
-            buildInputField('Status Keluarga', statusKeluargaController, readOnly: true),
+            buildInputField(
+              'Status Keluarga',
+              statusKeluargaController,
+              readOnly: true,
+            ),
             buildInputField('Pekerjaan', pekerjaanController, readOnly: true),
             buildInputField('Pendidikan', pendidikanController, readOnly: true),
             buildInputField('Keperluan', keperluanController),
             const SizedBox(height: 16),
-         buildUploadField('Foto KTP', _foto1, (file) {
+          buildUploadField('Kartu Keluarga', _foto1, (file) {
               setState(() => _foto1 = file);
+            }),
+            const SizedBox(height: 16),
+
+            buildUploadField('Buku Nikah', _foto2, (file) {
+              setState(() => _foto2 = file);
+            }),
+            const SizedBox(height: 16),
+
+            buildUploadField('Kartu Keluarga Tujuan Pindah', _foto3, (file) {
+              setState(() => _foto3 = file);
             }),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Pengajuan berhasil dikirim!')),
-                  );
-                },
+                onPressed: isLoading ? null : _submitForm,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0057A6),
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -116,14 +214,26 @@ class _FormPengajuanState extends State<FormPengajuan> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: const Text(
-                  'Kirim',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
+                child:
+                    isLoading
+                        ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                        : Text(
+                          'Kirim',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
               ),
             ),
           ],
@@ -138,7 +248,10 @@ class _FormPengajuanState extends State<FormPengajuan> {
     bool readOnly = false,
     TextInputType keyboardType = TextInputType.text,
   }) {
-    final Color borderColor = readOnly ? const Color.fromARGB(255, 13, 103, 221) : const Color(0xFF0057A6);
+    final Color borderColor =
+        readOnly
+            ? const Color.fromARGB(255, 13, 103, 221)
+            : const Color(0xFF0057A6);
     final Color textColor = readOnly ? Colors.grey.shade700 : Colors.black;
 
     return Padding(
@@ -163,24 +276,18 @@ class _FormPengajuanState extends State<FormPengajuan> {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: borderColor,
-              width: 1.5,
-            ),
+            borderSide: BorderSide(color: borderColor, width: 1.5),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: borderColor,
-              width: 2,
-            ),
+            borderSide: BorderSide(color: borderColor, width: 2),
           ),
         ),
       ),
     );
   }
 
-Widget buildUploadField(
+    Widget buildUploadField(
     String label,
     File? imageFile,
     Function(File) onImagePicked,
