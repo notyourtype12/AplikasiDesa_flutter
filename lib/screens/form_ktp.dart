@@ -67,7 +67,7 @@ class _FormAktaState extends State<FormKtp> {
     final uri = Uri.parse('$baseURL/pengajuan');
     final request = http.MultipartRequest('POST', uri);
 
-    request.fields['id_surat'] = 'S2025-001';
+    request.fields['id_surat'] = 'S2025-006';
     request.fields['nik'] = nikController.text;
     request.fields['keperluan'] = keperluanController.text;
     request.fields['tanggal_diajukan'] = DateTime.now().toIso8601String();

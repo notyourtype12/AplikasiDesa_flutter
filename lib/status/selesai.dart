@@ -1,33 +1,39 @@
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../config/globals.dart';
+import '../models/pengajuanselesai_model.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:file_picker/file_picker.dart';
 
-class DisetujuiModel {
-  final String nama_surat;
-  final String updated_at;
-  final String status;
-
-  DisetujuiModel({
-    required this.nama_surat,
-    required this.updated_at,
-    required this.status,
-  });
-
-  factory DisetujuiModel.fromJson(Map<String, dynamic> json) {
-    return DisetujuiModel(
-      nama_surat: json['nama_surat'],
-      updated_at: json['updated_at'],
-      status: json['status'],
-    );
-  }
-}
 
 class DisetujuiView extends StatelessWidget {
   const DisetujuiView({super.key});
 
-  Future<List<DisetujuiModel>> fetchDisetujui() async {
+  // Future<String?> pickFolder() async {
+  //   String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+  //   return selectedDirectory; // null kalau batal
+  // }
+
+  Future<bool> requestStoragePermission() async {
+    if (Platform.isAndroid) {
+      var status = await Permission.manageExternalStorage.status;
+      if (!status.isGranted) {
+        status = await Permission.manageExternalStorage.request();
+        if (!status.isGranted) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  Future<List<StatusSelesaiModel>> fetchDisetujui() async {
     final prefs = await SharedPreferences.getInstance();
     final nik = prefs.getString('nik') ?? '';
 
@@ -42,7 +48,7 @@ class DisetujuiView extends StatelessWidget {
 
     if (response.statusCode == 200) {
       List data = json.decode(response.body);
-      return data.map((item) => DisetujuiModel.fromJson(item)).toList();
+      return data.map((item) => StatusSelesaiModel.fromJson(item)).toList();
     } else {
       throw Exception('Gagal mengambil data');
     }
@@ -52,7 +58,7 @@ class DisetujuiView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: FutureBuilder<List<DisetujuiModel>>(
+      body: FutureBuilder<List<StatusSelesaiModel>>(
         future: fetchDisetujui(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -90,7 +96,7 @@ class DisetujuiView extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        item.nama_surat,
+                        item.namaSurat,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -106,7 +112,7 @@ class DisetujuiView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Disetujui Pada: ${item.updated_at}',
+                            'Disetujui Pada: ${item.updatedAt}',
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
@@ -114,34 +120,65 @@ class DisetujuiView extends StatelessWidget {
                           ),),
                           const SizedBox(height: 8),
                           const Text(
-                            'Terima Kasih! Surat Anda Telah Disetujui, Unduh Surat Pada Tombol Di Bawah Ini.',
+                            'Terima Kasih! Surat Anda Telah Disetujui,\nUnduh Surat Pada Tombol Di Bawah Ini.',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 8),
-                          // Text(
-                          //   'Status: ${item.status}',
-                          //   style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 128, 128, 128),),
-                          // ),
-                          // const SizedBox(height: 8),
+                       InkWell(
+                            onTap: () async {
+                              final url = item.filePdf;
+                              print('Mencoba download file: $url');
 
-                          // Unduh Surat
-                          Row(
-                            children: [
-                              const Icon(Icons.download_outlined, color: Color(0xFF0057A6)),
-                              const SizedBox(width: 4),
-                              Text(
-                                "Unduh Surat",
-                                style: const TextStyle(
+                              try {
+                                final fileName = url.split('/').last;
+
+                                // Tentukan folder default Download Android
+                                final directory = Directory(
+                                  '/storage/emulated/0/Download',
+                                );
+                                final filePath = '${directory.path}/$fileName';
+
+                                Dio dio = Dio();
+                                await dio.download(url, filePath);
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'File berhasil diunduh di $filePath',
+                                    ),
+                                  ),
+                                );
+                              } catch (e) {
+                                print('Error saat download file: $e');
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Gagal download file: $e'),
+                                  ),
+                                );
+                              }
+                            },
+                            child: Row(
+                              children: const [
+                                Icon(
+                                  Icons.download_outlined,
                                   color: Color(0xFF0057A6),
-                                  fontWeight: FontWeight.bold,
                                 ),
-                              ),
-                            ],
+                                SizedBox(width: 4),
+                                Text(
+                                  "Unduh Surat",
+                                  style: TextStyle(
+                                    color: Color(0xFF0057A6),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
+
+                         ],
                       ),
                     ),
                   ],

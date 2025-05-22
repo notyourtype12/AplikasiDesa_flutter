@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../config/globals.dart';
+import '../models/detail_berita.dart'; // Asumsikan ini file model Berita yang kamu buat
 
 class DetailBerita extends StatefulWidget {
-  final int beritaId;
+  final String beritaId;
 
-  const DetailBerita({required this.beritaId});
+  const DetailBerita({required this.beritaId, Key? key}) : super(key: key);
 
   @override
   _DetailBeritaState createState() => _DetailBeritaState();
 }
 
 class _DetailBeritaState extends State<DetailBerita> {
-  Map<String, dynamic>? berita;
+  Berita? berita;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -21,49 +24,67 @@ class _DetailBeritaState extends State<DetailBerita> {
   }
 
   Future<void> fetchDetail() async {
-    final response = await http.get(
-      Uri.parse('http://192.168.1.10:8000/api/berita/${widget.beritaId}'),
-    );
+    try {
+      final response = await http.get(
+        Uri.parse('$baseURL/berita/${widget.beritaId}'),
+        headers: headers,
+      );
 
-    if (response.statusCode == 200) {
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        setState(() {
+          berita = Berita.fromJson(data);
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        throw Exception('Failed to load detail berita');
+      }
+    } catch (e) {
       setState(() {
-        berita = json.decode(response.body);
+        isLoading = false;
       });
-    } else {
-      print('Gagal memuat detail berita');
+      print('Error fetch detail berita: $e');
+      // Kalau mau, bisa tampilkan error di UI juga dengan Snackbar
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Detail Berita')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     if (berita == null) {
       return Scaffold(
-        appBar: AppBar(title: Text('Detail Berita')),
-        body: Center(child: CircularProgressIndicator()),
+        appBar: AppBar(title: const Text('Detail Berita')),
+        body: const Center(child: Text('Data berita tidak ditemukan')),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(berita!['judul'] ?? 'Detail')),
+      appBar: AppBar(title: Text(berita!.judul)),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (berita!['gambar'] != null)
-              Image.network(berita!['gambar'], fit: BoxFit.cover),
-            SizedBox(height: 16),
+            if (berita!.gambar != null)
+              Image.network(berita!.gambar!, fit: BoxFit.cover),
+            const SizedBox(height: 16),
             Text(
-              berita!['judul'] ?? '',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              berita!.judul,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
-            Text(
-              berita!['created_at'] ?? '',
-              style: TextStyle(color: Colors.grey),
-            ),
-            Divider(height: 32),
-            Text(berita!['isi'] ?? ''),
+            const SizedBox(height: 8),
+            Text(berita!.tanggal, style: const TextStyle(color: Colors.grey)),
+            const Divider(height: 32),
+            Text(berita!.deskripsi),
           ],
         ),
       ),

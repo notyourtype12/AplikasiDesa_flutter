@@ -3,33 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/globals.dart';
-
-class PengajuanModel {
-  final String nama_surat;
-  final String tanggal_diajukan;
-  final String status;
-
-  PengajuanModel({ //constructor
-    required this.nama_surat,
-    required this.tanggal_diajukan,
-    required this.status,
-  });
-
-  factory PengajuanModel.fromJson(Map<String, dynamic> json) { //ubah json ke objek
-    return PengajuanModel(
-      nama_surat: json['nama_surat'],
-      tanggal_diajukan: json['tanggal_diajukan'],
-      status: json['status'],
-    );
-  }
-}
+import '../models/pengajuandiajukan_model.dart';
 
 class PengajuanView extends StatelessWidget {
   const PengajuanView({super.key});
 
-  Future<List<PengajuanModel>> fetchPengajuan() async {
+  Future<List<StatusDiajukanModel>> fetchPengajuan() async {
     final prefs = await SharedPreferences.getInstance();
-    final nik = prefs.getString('nik') ?? ''; //ambil nik dari login
+    final nik = prefs.getString('nik') ?? '';
 
     if (nik.isEmpty) {
       throw Exception('NIK tidak ditemukan di SharedPreferences');
@@ -39,10 +20,10 @@ class PengajuanView extends StatelessWidget {
       Uri.parse('$baseURL/statusdiajukan?nik=$nik'),
       headers: headers,
     );
-    if (response.statusCode == 200) {
-      List data = json.decode(response.body);
-      return data.map((item) => PengajuanModel.fromJson(item)).toList();
 
+    if (response.statusCode == 200) {
+      final List data = json.decode(response.body);
+      return data.map((item) => StatusDiajukanModel.fromJson(item)).toList();
     } else {
       throw Exception('Gagal mengambil data');
     }
@@ -52,11 +33,9 @@ class PengajuanView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-    
-    //menunggu data dari API dan balikin data dari api
-      body: FutureBuilder<List<PengajuanModel>>(
-        future: fetchPengajuan(), //memanggil data http
-        builder: (context, snapshot) { //snapsot handling dari future
+      body: FutureBuilder<List<StatusDiajukanModel>>(
+        future: fetchPengajuan(),
+        builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
@@ -65,15 +44,13 @@ class PengajuanView extends StatelessWidget {
             return const Center(child: Text("Tidak ada data"));
           }
 
-//manampilkan data ke list view
           final pengajuans = snapshot.data!;
           return ListView.builder(
             itemCount: pengajuans.length,
-            itemBuilder: (context, index) { // index tu macam arraynya gitu 
+            itemBuilder: (context, index) {
               final item = pengajuans[index];
               return Card(
-                color: Colors.white, 
-                margin: const EdgeInsets.all(19), // jarak antar carrd tengah
+                margin: const EdgeInsets.all(19),
                 elevation: 3,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -82,15 +59,17 @@ class PengajuanView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      width: double.infinity, // lebar card
+                      width: double.infinity,
                       height: 50,
-                      padding: const EdgeInsets.all(12), // padding card
+                      padding: const EdgeInsets.all(12),
                       decoration: const BoxDecoration(
-                        color: Color.fromARGB(255, 0, 87, 166), // Biru atas card
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                        color: Color(0xFF0057A6),
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(12),
+                        ),
                       ),
                       child: Text(
-                        item.nama_surat.toUpperCase(),
+                        item.namaSurat.toUpperCase(),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -104,7 +83,7 @@ class PengajuanView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Diajukan Pada: ${item.tanggal_diajukan}",
+                            "Diajukan Pada: ${item.tanggalDiajukan}",
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
@@ -113,7 +92,7 @@ class PengajuanView extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           const Text(
-                            'Surat Anda Sedang Ditinjau. Mohon Tunggu Keputusan Dari Pihak Terkait.',
+                            'Surat Anda Sedang Ditinjau. \nMohon Tunggu Keputusan Dari Pihak Terkait.',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -131,7 +110,10 @@ class PengajuanView extends StatelessWidget {
                           const SizedBox(height: 10),
                           Row(
                             children: const [
-                              Icon(Icons.delete_outline, color: Color(0xFF0057A6)),
+                              Icon(
+                                Icons.delete_outline,
+                                color: Color(0xFF0057A6),
+                              ),
                               SizedBox(width: 4),
                               Text(
                                 "Hapus",

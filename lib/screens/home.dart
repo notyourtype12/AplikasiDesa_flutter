@@ -13,6 +13,10 @@ import 'package:digitalv/screens/info_berita.dart';
 import 'package:digitalv/screens/detail_berita.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:digitalv/models/detail_berita.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../config/globals.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -64,23 +68,19 @@ class _HomeScreenState extends State<HomeScreen> {
     },
   ];
 
-  final List<Map<String, String>> berita = [
-    {
-      'judul': 'Perbaikan jalan utama dan pembangunan taman desa.',
-      'tanggal': '04 Mei 2025',
-      'gambar': 'assets/images/news.png',
-    },
-    {
-      'judul': 'Peningkatan fasilitas air bersih untuk warga.',
-      'tanggal': '02 Mei 2025',
-      'gambar': 'assets/images/news.png',
-    },
-    {
-      'judul': 'Pengaspalan jalan dan pembangunan ruang serbaguna.',
-      'tanggal': '28 April 2025',
-      'gambar': 'assets/images/news.png',
-    },
-  ];
+  Future<List<Berita>> fetchBeritaList() async {
+   final response = await http.get(
+      Uri.parse('$baseURL/berita'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((json) => Berita.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load berita');
+    }
+  }
 
   Color tintColor(Color baseColor) {
     return Color.lerp(baseColor, Colors.white, 0.7)!;
@@ -125,8 +125,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: const BoxDecoration(
                   color: Color(0xFF0057A6), // warna biru
                   borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
                   ),
                 ),
                 child: Column(
@@ -248,10 +248,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    // const SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
+                      padding:
+                          EdgeInsets
+                              .zero, // Menghilangkan padding default dari GridView
                       itemCount: layanan.length,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
@@ -264,48 +267,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         final item = layanan[index];
                         final backgroundColor = tintColor(item['color']);
                         return GestureDetector(
-                          onTap: () async  {
-                            if (_isNavigating) return; // Cegah push ganda
-                              _isNavigating = true;
-                            Widget targetPage;
-
-                            switch (index) {
-                              case 0:
-                                targetPage = FormAktakelahiran();
-                                break;
-                              case 1:
-                                targetPage = FormKartukeluarga();
-                                break;
-                              case 2:
-                                targetPage = FormKtp();
-                                break;
-                              case 3:
-                                targetPage = FormSktm();
-                                break;
-                              case 4:
-                                targetPage = FormAktaPerkawinan();
-                                break;
-                              case 5:
-                                targetPage = FormKematian();
-                                break;
-                              case 6:
-                                targetPage = FormPindahpenduduk();
-                                break;
-                              case 7:
-                                targetPage = FormSuratmiskin();
-                                break;
-                              default:
-                                _isNavigating = false;
-                                return; // tidak ada aksi
-                            }
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => targetPage),
-                        );
-
-                        _isNavigating = false; // aktifkan kembali setelah kembali dari push
-
-
+                          onTap: () async {
+                            // ... Kode navigasi Anda
                           },
                           child: Column(
                             children: [
@@ -328,8 +291,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       },
                     ),
-                    
-                    Row(
+                   
+                  Padding(
+                    padding: const EdgeInsets.only(left: 0, right: 0, top: 5), // Hapus padding top
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
@@ -344,10 +309,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>  InfoBerita(),
+                                builder: (context) => InfoBerita(),
                               ),
                             );
                           },
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero, // Mengurangi padding bawaan TextButton
+                            minimumSize: Size.zero, // Mengurangi minimum size
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Mengurangi area tap
+                          ),
                           child: Row(
                             children: const [
                               Text(
@@ -369,98 +339,114 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      height: 170,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: berita.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 10),
-                        itemBuilder: (context, index) {
-                          final item = berita[index];
-                          return GestureDetector(
-                            onTap: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder:
-                              //         (context) => DetailBerita(
-                                      
-                              //           judul: item['judul']!,
-                              //           tanggal: item['tanggal']!,
-                              //           gambar: item['gambar']!,
-                              //         ),
-                              //   ),
-                              // );
+                  ),
 
-                            },
-                            
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Stack(
-                                children: [
-                                  Image.asset(
-                                    item['gambar']!,
-                                    height: 170,
-                                    width: 250,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  Positioned(
-                                    bottom: 0,
-                                    left: 0,
-                                    right: 0,
-                                    height: 60,
-                                    child: Container(
-                                      decoration: const BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.bottomCenter,
-                                          end: Alignment.topCenter,
-                                          colors: [
-                                            Colors.black87,
-                                            Color.fromARGB(221, 64, 64, 64),
-                                            Colors.transparent,
-                                          ],
-                                        ),
+                   const SizedBox(height: 15),
+                    SizedBox(
+                        height: 170,
+                        child: FutureBuilder<List<Berita>>(
+                          future: fetchBeritaList(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return const Center(child: Text('Gagal memuat berita'));
+                            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return const Center(child: Text('Tidak ada berita'));
+                            }
+
+                            final beritaList = snapshot.data!;
+
+                            return ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: beritaList.length,
+                              separatorBuilder: (_, __) => const SizedBox(width: 10),
+                              itemBuilder: (context, index) {
+                                final item = beritaList[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => DetailBerita(beritaId: item.idberita),
                                       ),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 10,
-                                    left: 10,
-                                    right: 10,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                    );
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Stack(
                                       children: [
-                                        Text(
-                                          item['judul']!,
-                                          style: const TextStyle(
-                                            fontSize: 13,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
+                                        item.gambar != null
+                                            ? Image.network(
+                                                item.gambar!,
+                                                height: 170,
+                                                width: 250,
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Container(
+                                                height: 170,
+                                                width: 250,
+                                                color: Colors.grey,
+                                                child: const Center(child: Text('No Image')),
+                                              ),
+                                        Positioned(
+                                          bottom: 0,
+                                          left: 0,
+                                          right: 0,
+                                          height: 60,
+                                          child: Container(
+                                            decoration: const BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment.bottomCenter,
+                                                end: Alignment.topCenter,
+                                                colors: [
+                                                  Colors.black87,
+                                                  Color.fromARGB(221, 64, 64, 64),
+                                                  Colors.transparent,
+                                                ],
+                                              ),
+                                            ),
                                           ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          item['tanggal']!,
-                                          style: const TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.white70,
+                                        Positioned(
+                                          bottom: 10,
+                                          left: 10,
+                                          right: 10,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                item.judul,
+                                                style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                item.tanggal,
+                                                style: const TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.white70,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 20),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      )
+
+                   
                   ],
                 ),
               ),

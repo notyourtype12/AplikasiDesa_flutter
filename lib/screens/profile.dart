@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../screens/detail_profile.dart';
 import '../screens/info_profile.dart';
 import '../auth/LoginRegis.dart';
+import '../../controllers/my_tab_controller.dart';
+
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,7 +38,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-      backgroundColor: Colors.white,
+      // backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: Colors.white,
+
         automaticallyImplyLeading: false,
         title: const Text(
           'PROFILE',
@@ -98,7 +102,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   
-                  backgroundColor: const Color.fromARGB(74, 255, 0, 0),
+                  backgroundColor: const Color.fromARGB(255, 224, 13, 13),
                  
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   shape: RoundedRectangleBorder(
