@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailProfile extends StatefulWidget {
@@ -36,9 +37,9 @@ class _DetailProfileState extends State<DetailProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'UBAH INFO PROFIL',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Color(0xFF0057A6),
@@ -49,8 +50,9 @@ class _DetailProfileState extends State<DetailProfile> {
         shadowColor: Colors.black.withOpacity(0.25),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
+        
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
@@ -63,25 +65,29 @@ class _DetailProfileState extends State<DetailProfile> {
               emailController,
               keyboardType: TextInputType.emailAddress,
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 15),
             SizedBox(
-              width: 125,
+              width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Profile berhasil diperbarui')),
+                    const SnackBar(
+                      content: Text('Profile berhasil diperbarui'),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0057A6),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(
+                      10,
+                    ), // Disamakan dengan text field
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Ubah',
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
@@ -89,6 +95,7 @@ class _DetailProfileState extends State<DetailProfile> {
                 ),
               ),
             ),
+
           ],
         ),
       ),
@@ -110,7 +117,7 @@ class _DetailProfileState extends State<DetailProfile> {
         controller: controller,
         readOnly: readOnly,
         keyboardType: keyboardType,
-        style: TextStyle(color: textColor),
+        style: GoogleFonts.poppins(color: Colors.black, fontSize: 12),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(

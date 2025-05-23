@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../screens/detail_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../config/profileApi.dart';
+import '../controllers/ProfileController.dart';
+import '../widgets/snackbarcustom.dart'; 
 
 class InfoProfile extends StatefulWidget {
   const InfoProfile({super.key});
@@ -27,6 +29,28 @@ class _InfoProfileState extends State<InfoProfile> {
     _initializeProfile();
   }
 
+  Future<void> _pickImageAndUpload() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      File selected = File(pickedFile.path);
+      setState(() {
+        _image = selected;
+      });
+
+      // Panggil fungsi upload dari file terpisah
+      await uploadFotoProfil(context, selected);
+    } else {
+      showCustomSnackbar(
+        context: context,
+        message: 'Tidak ada gambar dipilih',
+        backgroundColor: Colors.orange,
+        icon: Icons.warning,
+      );
+    }
+  }
+
   Future<void> _initializeProfile() async {
     await getProfilFromApi(context); // Tunggu API selesai
     await _loadProfileData(); // Lalu refresh dari SharedPreferences
@@ -44,25 +68,14 @@ class _InfoProfileState extends State<InfoProfile> {
     });
   }
 
-  Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-    );
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text(
-          'Profile',
-          style: TextStyle(
+        title: Text(
+          'PROFILE',
+          style: GoogleFonts.poppins(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Color(0xFF0057A6),
@@ -105,7 +118,7 @@ class _InfoProfileState extends State<InfoProfile> {
                     bottom: 0,
                     right: 4,
                     child: GestureDetector(
-                      onTap: _pickImage,
+                      onTap: _pickImageAndUpload,
                       child: Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
@@ -168,21 +181,20 @@ class _InfoProfileState extends State<InfoProfile> {
                             ),
                             SizedBox(width: 4),
                             Icon(Icons.edit, size: 16,
-                                                                      color: Color(0xFF0057A6),
-
-
-),
+                            color: Color(0xFF0057A6),
+                            ),
                           ],
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                   buildProfileRow('NIK', _nik),
+                  buildProfileRow('NIK', _nik),
                   buildProfileRow('No Kartu Keluarga', _noKK),
                   buildProfileRow('Nama Lengkap', _nama),
                   buildProfileRow('No Handphone', _noHP),
                   buildProfileRow('E-Mail', _email),
+                  
                 ],
               ),
             ),

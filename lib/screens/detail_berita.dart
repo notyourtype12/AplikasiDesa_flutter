@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:google_fonts/google_fonts.dart';
+
 import '../config/globals.dart';
-import '../models/detail_berita.dart'; // Asumsikan ini file model Berita yang kamu buat
+import '../models/detail_berita.dart';
 
 class DetailBerita extends StatefulWidget {
   final String beritaId;
@@ -47,7 +49,6 @@ class _DetailBeritaState extends State<DetailBerita> {
         isLoading = false;
       });
       print('Error fetch detail berita: $e');
-      // Kalau mau, bisa tampilkan error di UI juga dengan Snackbar
     }
   }
 
@@ -55,20 +56,30 @@ class _DetailBeritaState extends State<DetailBerita> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Detail Berita')),
+        appBar: AppBar(title: Text('Detail Berita', style: GoogleFonts.poppins())),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (berita == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Detail Berita')),
-        body: const Center(child: Text('Data berita tidak ditemukan')),
+        appBar: AppBar(title: Text('Detail Berita', style: GoogleFonts.poppins())),
+        body: Center(
+          child: Text(
+            'Data berita tidak ditemukan',
+            style: GoogleFonts.poppins(),
+          ),
+        ),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(berita!.judul)),
+      appBar: AppBar(
+        title: Text(
+          berita!.judul,
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -79,12 +90,18 @@ class _DetailBeritaState extends State<DetailBerita> {
             const SizedBox(height: 16),
             Text(
               berita!.judul,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Text(berita!.tanggal, style: const TextStyle(color: Colors.grey)),
+            Text(
+              berita!.tanggal,
+              style: GoogleFonts.poppins(color: Colors.grey),
+            ),
             const Divider(height: 32),
-            Text(berita!.deskripsi),
+            Text(
+              berita!.deskripsi,
+              style: GoogleFonts.poppins(fontSize: 16),
+            ),
           ],
         ),
       ),

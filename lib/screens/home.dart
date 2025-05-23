@@ -150,6 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
+                
               ),
               const SizedBox(height: 10),
               Container(
@@ -268,7 +269,48 @@ class _HomeScreenState extends State<HomeScreen> {
                         final backgroundColor = tintColor(item['color']);
                         return GestureDetector(
                           onTap: () async {
-                            // ... Kode navigasi Anda
+                            if (_isNavigating) return; // Cegah push ganda
+                              _isNavigating = true;
+                            Widget targetPage;
+
+                            switch (index) {
+                              case 0:
+                                targetPage = FormAktakelahiran();
+                                break;
+                              case 1:
+                                targetPage = FormKartukeluarga();
+                                break;
+                              case 2:
+                                targetPage = FormKtp();
+                                break;
+                              case 3:
+                                targetPage = FormSktm();
+                                break;
+                              case 4:
+                                targetPage = FormAktaPerkawinan();
+                                break;
+                              case 5:
+                                targetPage = FormKematian();
+                                break;
+                              case 6:
+                                targetPage = FormPindahpenduduk();
+                                break;
+                              case 7:
+                                targetPage = FormSuratmiskin();
+                                break;
+                              default:
+                                _isNavigating = false;
+                                return; // tidak ada aksi
+                            }
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => targetPage),
+                        );
+
+                        _isNavigating = false; // aktifkan kembali setelah kembali dari push
+
+
+                          
                           },
                           child: Column(
                             children: [
@@ -297,9 +339,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                         Text(
                           'Berita Terkini',
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
                           ),

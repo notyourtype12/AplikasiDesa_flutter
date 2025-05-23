@@ -1,3 +1,4 @@
+import 'package:digitalv/widgets/bottom_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -8,6 +9,8 @@ import '../config/globals.dart';
 import '../controllers/SuratController.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:digitalv/widgets/snackbarcustom.dart';
+import 'package:digitalv/screens/status.dart';
+
 
 class FormPindahpenduduk extends StatefulWidget {
   const FormPindahpenduduk({super.key});
@@ -94,6 +97,13 @@ class _FormPindahpendudukState extends State<FormPindahpenduduk> {
           message: 'Pengajuan berhasil dikirim!',
           backgroundColor: Colors.green,
           icon: Icons.check_circle,
+        );
+            // tunggu setalah megjuankan
+        await Future.delayed(Duration(seconds: 1));
+        //pindah halaman setelah megajukan ke status
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => BottomNavBar()),
         );
       } else {
         String errorMessage = 'Gagal mengirim pengajuan.';

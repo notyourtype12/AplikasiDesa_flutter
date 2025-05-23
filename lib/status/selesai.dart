@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/globals.dart';
@@ -10,10 +11,17 @@ import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:digitalv/widgets/snackbarcustom.dart';
 
-
-class DisetujuiView extends StatelessWidget {
+class DisetujuiView extends StatefulWidget {
   const DisetujuiView({super.key});
+
+  @override
+  State<DisetujuiView> createState() => _DisetujuiViewState();
+}
+
+class _DisetujuiViewState extends State<DisetujuiView> {
+  late Future<List<StatusSelesaiModel>> futureSelesai;
 
   // Future<String?> pickFolder() async {
   //   String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
@@ -66,7 +74,12 @@ class DisetujuiView extends StatelessWidget {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Tidak ada data'));
+           return const Center(
+              child: Text(
+                "Tidak ada data",
+                style: TextStyle(fontFamily: 'Poppins', fontSize: 16),
+              ),
+            );
           }
 
           final disetujui = snapshot.data!;
@@ -76,7 +89,7 @@ class DisetujuiView extends StatelessWidget {
               final item = disetujui[index];
               return Card(
                 color: Colors.white,
-                margin: const EdgeInsets.all(16),
+                margin: const EdgeInsets.all(11),
                 elevation: 3,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -90,14 +103,14 @@ class DisetujuiView extends StatelessWidget {
                       height: 50,
                       padding: const EdgeInsets.all(12),
                       decoration: const BoxDecoration(
-                        color:Color(0xFF28A745),
+                        color: Color(0xFF28A745),
                         borderRadius: BorderRadius.vertical(
                           top: Radius.circular(12),
                         ),
                       ),
                       child: Text(
-                        item.namaSurat,
-                        style: const TextStyle(
+                        item.namaSurat.toUpperCase(),
+                        style: GoogleFonts.poppins(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -113,72 +126,206 @@ class DisetujuiView extends StatelessWidget {
                         children: [
                           Text(
                             'Disetujui Pada: ${item.updatedAt}',
-                            style: const TextStyle(
+                            style: GoogleFonts.poppins(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                               color: Color.fromARGB(255, 128, 128, 128),
-                          ),),
+                            ),
+                          ),
                           const SizedBox(height: 8),
-                          const Text(
+                          Text(
                             'Terima Kasih! Surat Anda Telah Disetujui,\nUnduh Surat Pada Tombol Di Bawah Ini.',
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           const SizedBox(height: 8),
-                       InkWell(
-                            onTap: () async {
-                              final url = item.filePdf;
-                              print('Mencoba download file: $url');
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              InkWell(
+                                onTap: () async {
+                                  final url = item.filePdf;
+                                  if (!await requestStoragePermission()) {
+                                    showCustomSnackbar(
+                                      context: context,
+                                      message: 'Izin penyimpanan ditolak',
+                                      backgroundColor: Colors.red,
+                                      icon: Icons.error,
+                                    );
+                                    return;
+                                  }
 
-                              try {
-                                final fileName = url.split('/').last;
+                                  try {
+                                    final fileName = url.split('/').last;
+                                    final directory = Directory(
+                                      '/storage/emulated/0/Download',
+                                    );
 
-                                // Tentukan folder default Download Android
-                                final directory = Directory(
-                                  '/storage/emulated/0/Download',
-                                );
-                                final filePath = '${directory.path}/$fileName';
+                                    if (!await directory.exists()) {
+                                      await directory.create(recursive: true);
+                                    }
 
-                                Dio dio = Dio();
-                                await dio.download(url, filePath);
+                                    final filePath =
+                                        '${directory.path}/$fileName';
+                                    Dio dio = Dio();
+                                    await dio.download(url, filePath);
 
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'File berhasil diunduh di $filePath',
+                                    showCustomSnackbar(
+                                      context: context,
+                                      message:
+                                          'File berhasil diunduh di folder Download',
+                                      backgroundColor: Colors.green,
+                                      icon: Icons.check_circle,
+                                    );
+                                  } catch (e) {
+                                    showCustomSnackbar(
+                                      context: context,
+                                      message: 'Gagal download file: $e',
+                                      backgroundColor: Colors.red,
+                                      icon: Icons.error,
+                                    );
+                                  }
+                                },
+                                borderRadius: BorderRadius.circular(12),
+                                 child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.download_outlined,
+                                      color: Color(0xFF0057A6),
                                     ),
-                                  ),
-                                );
-                              } catch (e) {
-                                print('Error saat download file: $e');
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Gagal download file: $e'),
-                                  ),
-                                );
-                              }
-                            },
-                            child: Row(
-                              children: const [
-                                Icon(
-                                  Icons.download_outlined,
-                                  color: Color(0xFF0057A6),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      "Unduh Surat",
+                                      style: GoogleFonts.poppins(
+                                        color: Color(0xFF0057A6),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                SizedBox(width: 4),
-                                Text(
-                                  "Unduh Surat",
-                                  style: TextStyle(
-                                    color: Color(0xFF0057A6),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                                 ),
+                              ),
+                              const SizedBox(width: 12),
+                              InkWell(
+                                onTap: () async {
+                                  final confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder:
+                                        (context) => AlertDialog(
+                                          title: Text(
+                                            "Konfirmasi",
+                                            style: GoogleFonts.poppins(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                          content: Text(
+                                            "Apakah Anda yakin ingin menghapus surat ini?",
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 16,
+                                              color: Colors.black54,
+                                            ),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed:
+                                                  () => Navigator.pop(
+                                                    context,
+                                                    false,
+                                                  ),
+                                              child: Text(
+                                                "Batal",
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.grey[700],
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed:
+                                                  () => Navigator.pop(
+                                                    context,
+                                                    true,
+                                                  ),
+                                              child: Text(
+                                                "Hapus",
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                  );
 
-                         ],
+                                  if (confirm == true) {
+                                    final response = await http.delete(
+                                      Uri.parse(
+                                        '$baseURL/suratdelete/${item.idPengajuan}',
+                                      ),
+                                      headers: headers,
+                                    );
+
+                                    if (response.statusCode == 200) {
+                                      showCustomSnackbar(
+                                        context: context,
+                                        message: "Surat berhasil dihapus",
+                                        backgroundColor: Colors.green,
+                                        icon: Icons.check_circle,
+                                      );
+                                      setState(() {
+                                        futureSelesai = fetchDisetujui();
+                                      });
+                                      // Trigger refresh if in StatefulWidget
+                                      if (context is StatefulElement) {
+                                        (context as Element).markNeedsBuild();
+                                      }
+                                    } else {
+                                      showCustomSnackbar(
+                                        context: context,
+                                        message: "Gagal menghapus surat",
+                                        backgroundColor: Colors.red,
+                                        icon: Icons.error,
+                                      );
+                                    }
+                                  }
+                                },
+                                borderRadius: BorderRadius.circular(12),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.delete_outline,
+                                      color: Color(0xFFF91717),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      "Hapus",
+                                      style: GoogleFonts.poppins(
+                                        color: Color(0xFFF91717),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              ),
+                            ],
+                            
+                          ),
+                          
+                        ],
                       ),
                     ),
                   ],

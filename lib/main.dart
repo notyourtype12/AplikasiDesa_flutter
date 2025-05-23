@@ -1,15 +1,30 @@
-
 import 'package:digitalv/auth/LoginRegis.dart';
 import 'package:digitalv/auth/LupaPassword.dart';
 
 import 'package:digitalv/auth/auth.dart';
 import 'package:digitalv/widgets/bottom_navbar.dart';
 import 'package:flutter/material.dart';
+// import 'package:workmanager/workmanager.dart';
+import 'package:digitalv/widgets/background_task.dart'; 
 
 void main() {
-  runApp(const MyApp());
-}
+  // Inisialisasi notifikasi
+  // AwesomeNotifications().initialize(null, [
+  //   NotificationChannel(
+  //     channelKey: 'basic_channel',
+  //     channelName: 'Surat Status',
+  //     channelDescription: 'Notifikasi perubahan status surat',
+  //     defaultColor: Colors.blue,
+  //     importance: NotificationImportance.High,
+  //     channelShowBadge: true,
+  //   ),
+  // ], debug: true);
 
+  // // Register background task
+  // Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+
+  runApp(MyApp());
+}
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -39,8 +54,6 @@ class MyApp extends StatelessWidget {
 
       // home: BottomNavBar(),
       home: Loginregis(),
-
-      
     );
   }
 }

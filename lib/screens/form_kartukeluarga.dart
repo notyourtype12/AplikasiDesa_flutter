@@ -1,3 +1,4 @@
+import 'package:digitalv/widgets/bottom_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -7,6 +8,8 @@ import '../auth/LoginRegis.dart';
 import '../config/globals.dart';
 import '../controllers/SuratController.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:digitalv/screens/status.dart';
+
 import 'package:digitalv/widgets/snackbarcustom.dart';
 
 class FormKartukeluarga extends StatefulWidget {
@@ -112,6 +115,14 @@ class _FormAktaState extends State<FormKartukeluarga> {
           backgroundColor: Colors.green,
           icon: Icons.check_circle,
         );
+
+            // tunggu setalah megjuankan
+        await Future.delayed(Duration(seconds: 1));
+        //pindah halaman setelah megajukan ke status
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => BottomNavBar()),
+        );
       } else {
         String errorMessage = 'Gagal mengirim pengajuan.';
         try {
@@ -124,12 +135,7 @@ class _FormAktaState extends State<FormKartukeluarga> {
                   .join('\n');
             } else if (responseData.containsKey('message')) {
               errorMessage = responseData['message'];
-              //     } else {
-              //       errorMessage = 'Terjadi kesalahan: ${res.body}';
-              //     }
-              //   } else {
-              //     errorMessage = 'Response tidak dikenal: ${res.body}';
-              //   }
+             
             }
           }
         } catch (e) {

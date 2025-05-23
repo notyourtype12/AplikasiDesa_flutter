@@ -1,3 +1,5 @@
+import 'package:digitalv/screens/status.dart';
+import 'package:digitalv/widgets/bottom_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -80,6 +82,13 @@ class _FormAktaState extends State<FormAktakelahiran> {
           message: 'Pengajuan berhasil dikirim!',
           backgroundColor: Colors.green,
           icon: Icons.check_circle,
+        );
+        // tunggu setalah megjuankan
+        await Future.delayed(Duration(seconds: 1));
+        //pindah halaman setelah megajukan ke status
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => BottomNavBar()),
         );
       } else {
         String errorMessage = 'Gagal mengirim pengajuan.';

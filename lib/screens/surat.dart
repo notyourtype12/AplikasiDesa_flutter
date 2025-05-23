@@ -8,6 +8,8 @@ import 'package:digitalv/screens/form_sktm.dart';
 import 'package:digitalv/screens/form_suratmiskin.dart';
 import 'package:flutter/material.dart';
 import '../screens/form_pengajuan.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 class SuratScreen extends StatefulWidget {
   const SuratScreen({super.key});
@@ -39,15 +41,14 @@ class _SuratScreenState extends State<SuratScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
-        title: Text(
+       title: Text(
           'LAYANAN SURAT',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Color(0xFF0057A6),
           ),
         ),
-       
         elevation: 2,
         shadowColor: Colors.black.withOpacity(0.25),
         iconTheme: IconThemeData(color: Colors.black),
