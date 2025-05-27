@@ -14,10 +14,9 @@ import 'package:digitalv/widgets/snackbarcustom.dart';
 
 class FormAktakelahiran extends StatefulWidget {
   const FormAktakelahiran({super.key});
-  
+
   @override
   State<FormAktakelahiran> createState() => _FormAktaState();
-  
 }
 
 class _FormAktaState extends State<FormAktakelahiran> {
@@ -45,10 +44,9 @@ class _FormAktaState extends State<FormAktakelahiran> {
   @override
   void initState() {
     super.initState();
-    _loadUserData(); 
-    
+    _loadUserData();
   }
-  
+
   Future<void> _submitForm() async {
     setState(() => isLoading = true); // Aktifkan loading
 
@@ -90,6 +88,23 @@ class _FormAktaState extends State<FormAktakelahiran> {
           context,
           MaterialPageRoute(builder: (context) => BottomNavBar()),
         );
+      } else if (res.statusCode == 409) {
+        String conflictMessage = 'Pengajuan gagal karena konflik data.';
+        try {
+          final responseData = jsonDecode(res.body);
+          if (responseData is Map && responseData.containsKey('message')) {
+            conflictMessage = responseData['message'];
+          }
+        } catch (_) {
+          conflictMessage = 'Pengajuan ditolak: ${res.body}';
+        }
+
+        showCustomSnackbar(
+          context: context,
+          message: conflictMessage,
+          backgroundColor: Colors.orange,
+          icon: Icons.warning_amber_rounded,
+        );
       } else {
         String errorMessage = 'Gagal mengirim pengajuan.';
         try {
@@ -126,7 +141,6 @@ class _FormAktaState extends State<FormAktakelahiran> {
     setState(() => isLoading = false); // Nonaktifkan loading
   }
 
-
   Future<void> _loadUserData() async {
     final data = await fetchUserData();
     if (data != null) {
@@ -146,7 +160,7 @@ class _FormAktaState extends State<FormAktakelahiran> {
     }
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -171,13 +185,33 @@ class _FormAktaState extends State<FormAktakelahiran> {
             // Form input kamu tetap sama...
             buildInputField('Nama lengkap', namaController, readOnly: true),
             buildInputField('NIK', nikController, readOnly: true),
-            buildInputField('Tempat Lahir', tempatLahirController, readOnly: true),
-            buildInputField('Tanggal Lahir', tanggalLahirController, readOnly: true),
-            buildInputField('Golongan Darah', golDarahController, readOnly: true),
+            buildInputField(
+              'Tempat Lahir',
+              tempatLahirController,
+              readOnly: true,
+            ),
+            buildInputField(
+              'Tanggal Lahir',
+              tanggalLahirController,
+              readOnly: true,
+            ),
+            buildInputField(
+              'Golongan Darah',
+              golDarahController,
+              readOnly: true,
+            ),
             buildInputField('Jenis Kelamin', jkController, readOnly: true),
-            buildInputField('Kewarganegaraan', kewarganegaraanController, readOnly: true),
+            buildInputField(
+              'Kewarganegaraan',
+              kewarganegaraanController,
+              readOnly: true,
+            ),
             buildInputField('Agama', agamaController, readOnly: true),
-            buildInputField('Status Keluarga', statusKeluargaController, readOnly: true),
+            buildInputField(
+              'Status Keluarga',
+              statusKeluargaController,
+              readOnly: true,
+            ),
             buildInputField('Pekerjaan', pekerjaanController, readOnly: true),
             buildInputField('Pendidikan', pendidikanController, readOnly: true),
             buildInputField('Keperluan', keperluanController),
@@ -205,23 +239,26 @@ class _FormAktaState extends State<FormAktakelahiran> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          strokeWidth: 2.5,
+                child:
+                    isLoading
+                        ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                        : Text(
+                          'Kirim',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
                         ),
-                      )
-                    : Text(
-                        'Kirim',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
               ),
             ),
           ],
@@ -230,106 +267,106 @@ class _FormAktaState extends State<FormAktakelahiran> {
     );
   }
 }
-  Widget buildInputField(
-    String label,
-    TextEditingController controller, {
-    bool readOnly = false,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    final Color borderColor =
-        readOnly
-            ? const Color.fromARGB(255, 13, 103, 221)
-            : const Color(0xFF0057A6);
-    final Color textColor = readOnly ? Colors.grey.shade700 : Colors.black;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: TextFormField(
-        controller: controller,
-        readOnly: readOnly,
-        keyboardType: keyboardType,
-        style: GoogleFonts.poppins(color: Colors.black, fontSize: 12),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: TextStyle(
-            color: borderColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 12,
-          ),
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 14,
-            horizontal: 16,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: borderColor, width: 1.5),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: borderColor, width: 2),
-          ),
+Widget buildInputField(
+  String label,
+  TextEditingController controller, {
+  bool readOnly = false,
+  TextInputType keyboardType = TextInputType.text,
+}) {
+  final Color borderColor =
+      readOnly
+          ? const Color.fromARGB(255, 13, 103, 221)
+          : const Color(0xFF0057A6);
+  final Color textColor = readOnly ? Colors.grey.shade700 : Colors.black;
+
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 16),
+    child: TextFormField(
+      controller: controller,
+      readOnly: readOnly,
+      keyboardType: keyboardType,
+      style: GoogleFonts.poppins(color: Colors.black, fontSize: 12),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(
+          color: borderColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
         ),
-      ),
-    );
-  }
-
-  Widget buildUploadField(
-    String label,
-    File? imageFile,
-    Function(File) onImagePicked,
-  ) {
-    return InkWell(
-      onTap: () async {
-        final pickedFile = await ImagePicker().pickImage(
-          source: ImageSource.gallery,
-        );
-        if (pickedFile != null) {
-          onImagePicked(File(pickedFile.path));
-        }
-      },
-      child: Container(
-        width: double.infinity,
-        height: 146,
-        decoration: BoxDecoration(
-          color: Colors.white,
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 14,
+          horizontal: 16,
+        ),
+        enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFF0057A6), width: 1.5),
+          borderSide: BorderSide(color: borderColor, width: 1.5),
         ),
-        child: Center(
-          child:
-              imageFile == null
-                  ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/upload.png',
-                        width: 50,
-                        height: 50,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        label,
-                        style: GoogleFonts.poppins(
-                          color: const Color(0xFF0057A6),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  )
-                  : ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.file(
-                      imageFile,
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: borderColor, width: 2),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
+Widget buildUploadField(
+  String label,
+  File? imageFile,
+  Function(File) onImagePicked,
+) {
+  return InkWell(
+    onTap: () async {
+      final pickedFile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+      );
+      if (pickedFile != null) {
+        onImagePicked(File(pickedFile.path));
+      }
+    },
+    child: Container(
+      width: double.infinity,
+      height: 146,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFF0057A6), width: 1.5),
+      ),
+      child: Center(
+        child:
+            imageFile == null
+                ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/upload.png',
+                      width: 50,
+                      height: 50,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      label,
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xFF0057A6),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                )
+                : ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.file(
+                    imageFile,
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+      ),
+    ),
+  );
+}

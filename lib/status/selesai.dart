@@ -23,11 +23,6 @@ class DisetujuiView extends StatefulWidget {
 class _DisetujuiViewState extends State<DisetujuiView> {
   late Future<List<StatusSelesaiModel>> futureSelesai;
 
-  // Future<String?> pickFolder() async {
-  //   String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-  //   return selectedDirectory; // null kalau batal
-  // }
-
   Future<bool> requestStoragePermission() async {
     if (Platform.isAndroid) {
       var status = await Permission.manageExternalStorage.status;

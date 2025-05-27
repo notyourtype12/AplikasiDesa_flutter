@@ -123,7 +123,7 @@ class _DitolakStateView extends State<DitolakView> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            "Status: ${item.status}",
+                            "Status : ${item.status}",
                             style: GoogleFonts.poppins(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,

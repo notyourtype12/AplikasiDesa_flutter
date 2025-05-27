@@ -6,6 +6,9 @@ import '../screens/detail_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../controllers/ProfileController.dart';
 import '../widgets/snackbarcustom.dart'; 
+import 'package:image_picker/image_picker.dart'; // Ambil gambar dari galeri/kamera
+import 'package:image_cropper/image_cropper.dart'; // Crop gambar
+import 'package:image_cropper/image_cropper.dart' as cropper;
 
 class InfoProfile extends StatefulWidget {
   const InfoProfile({super.key});
@@ -22,11 +25,12 @@ class _InfoProfileState extends State<InfoProfile> {
   String _nama = '';
   String _noHP = '';
   String _email = '';
+  String _fotoProfil = '';
 
  @override
   void initState() {
     super.initState();
-    _initializeProfile();
+    _refreshProfile();
   }
 
   Future<void> _pickImageAndUpload() async {
@@ -34,13 +38,38 @@ class _InfoProfileState extends State<InfoProfile> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      File selected = File(pickedFile.path);
-      setState(() {
-        _image = selected;
-      });
+      // Crop gambar terlebih dahulu
+      CroppedFile? croppedFile = await ImageCropper().cropImage(
+        sourcePath: pickedFile.path,
+        compressFormat: ImageCompressFormat.jpg,
+        compressQuality: 90,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop Foto',
+            toolbarColor: const Color(0xFF0057A6),
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: false,
+          ),
+          IOSUiSettings(title: 'Crop Foto'),
+        ],
+      );
 
-      // Panggil fungsi upload dari file terpisah
-      await uploadFotoProfil(context, selected);
+      if (croppedFile != null) {
+        File imageFile = File(croppedFile.path); // Konversi ke File
+        setState(() {
+          _image = imageFile;
+        });
+
+        await uploadFotoProfil(context, _image!);
+      } else {
+        showCustomSnackbar(
+          context: context,
+          message: 'Pemotongan gambar dibatalkan',
+          backgroundColor: Colors.orange,
+          icon: Icons.warning,
+        );
+      }
     } else {
       showCustomSnackbar(
         context: context,
@@ -51,22 +80,34 @@ class _InfoProfileState extends State<InfoProfile> {
     }
   }
 
-  Future<void> _initializeProfile() async {
-    await getProfilFromApi(context); // Tunggu API selesai
-    await _loadProfileData(); // Lalu refresh dari SharedPreferences
-  }
 
+  Future<void> _refreshProfile() async {
+    await getProfilFromApi(context);  
+    await _loadProfileData();
+  }
 
   Future<void> _loadProfileData() async {
     final prefs = await SharedPreferences.getInstance();
+
+    final nik = prefs.getString('nik') ?? 'Belum diatur';
+    final noKK = prefs.getString('no_kk') ?? 'Belum diatur';
+    final nama = prefs.getString('nama_lengkap') ?? 'Belum diatur';
+    final noHP = prefs.getString('no_hp') ?? 'Belum diatur';
+    final email = prefs.getString('email') ?? 'Belum diatur';
+    final fotoProfil = prefs.getString('foto_profil') ?? '';
+
+    // Logging ke console
+
     setState(() {
-      _nik = prefs.getString('nik') ?? 'Belum diatur';
-      _noKK = prefs.getString('no_kk') ?? 'Belum diatur';
-      _nama = prefs.getString('nama_lengkap') ?? 'Belum diatur';
-      _noHP = prefs.getString('no_hp') ?? 'Belum diatur';
-      _email = prefs.getString('email') ?? 'Belum diatur';
+      _nik = nik;
+      _noKK = noKK;
+      _nama = nama;
+      _noHP = noHP;
+      _email = email;
+      _fotoProfil = fotoProfil;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -110,9 +151,10 @@ class _InfoProfileState extends State<InfoProfile> {
                     radius: 55, 
                     backgroundImage:
                         _image != null
-                            ? FileImage(_image!)
-                            : const AssetImage('assets/images/devano.png')
-                                as ImageProvider,
+                             ? FileImage(_image!)
+                            : (_fotoProfil.isNotEmpty
+                                ? NetworkImage(_fotoProfil)
+                                : null),
                   ),
                   Positioned(
                     bottom: 0,
@@ -160,32 +202,43 @@ class _InfoProfileState extends State<InfoProfile> {
                           fontSize: 18,
                         ),
                       ),
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
+                   InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: () async {
+                          final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => const DetailProfile(),
                             ),
                           );
-                        },
-                        child: Row(
-                          children: const [
-                            Text(
-                              'Edit',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                            color: Color(0xFF0057A6),
 
+                          if (result == true) {
+                            await _refreshProfile(); 
+                          }
+                        },
+
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Row(
+                            children: const [
+                              Text(
+                                'Edit',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF0057A6),
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 4),
-                            Icon(Icons.edit, size: 16,
-                            color: Color(0xFF0057A6),
-                            ),
-                          ],
+                              SizedBox(width: 4),
+                              Icon(
+                                Icons.edit,
+                                size: 16,
+                                color: Color(0xFF0057A6),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
+
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -194,6 +247,27 @@ class _InfoProfileState extends State<InfoProfile> {
                   buildProfileRow('Nama Lengkap', _nama),
                   buildProfileRow('No Handphone', _noHP),
                   buildProfileRow('E-Mail', _email),
+                  
+                  const SizedBox(height: 8),
+                  InkWell(
+                    // onTap: () {
+                    //   Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (context) => const UbahPasswordPage(),
+                    //     ),
+                    //   );
+                    // },
+                    child: Text(
+                      'Ubah Password',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Color(0xFF0057A6),
+                        fontWeight: FontWeight.bold,
+
+                      ),
+                    ),
+                  ),
                   
                 ],
               ),

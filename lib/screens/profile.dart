@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../screens/detail_profile.dart';
 import '../screens/info_profile.dart';
 import '../auth/LoginRegis.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../controllers/ProfileController.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -13,26 +15,99 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  File? _image;
+
   String _nama = '';
   String _nik = '';
   String _noHp = '';
+  String _fotoProfil = '';
 
   @override
   void initState() {
     super.initState();
-    _loadProfileData();
+    _refreshProfile();
   }
 
   Future<void> _loadProfileData() async {
     final prefs = await SharedPreferences.getInstance();
-    if (!mounted) return; // safety check
+
+    final nik = prefs.getString('nik') ?? 'Belum diatur';
+    final nama = prefs.getString('nama_lengkap') ?? 'Belum diatur';
+    final noHP = prefs.getString('no_hp') ?? 'Belum diatur';
+    final fotoProfil = prefs.getString('foto_profil') ?? '';
+
+    // Logging ke console
+    print('===== Data Profil dari SharedPreferences =====');
+    print('NIK: $nik');
+    print('Nama: $nama');
+    print('No HP: $noHP');
+    print('Foto Profil: $fotoProfil');
+    print('=============================================');
+
     setState(() {
-      _nama = prefs.getString('nama') ?? 'Nama tidak ditemukan';
-      _nik = prefs.getString('nik') ?? 'NIK tidak ditemukan';
-      _noHp = prefs.getString('no_hp') ?? 'No HP tidak ditemukan';
+      _nik = nik;
+      _nama = nama;
+      _noHp = noHP;
+      _fotoProfil = fotoProfil;
     });
   }
 
+  Future<void> _refreshProfile() async {
+    await getProfilFromApi(context); // ← panggil fungsi dari file lain
+    await _loadProfileData();
+  }
+
+  Future<void> _showLogoutDialog(BuildContext context) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              "Konfirmasi Logout",
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Colors.black87,
+              ),
+            ),
+            content: Text(
+              "Apakah Anda yakin ingin keluar dari aplikasi?",
+              style: GoogleFonts.poppins(fontSize: 16, color: Colors.black54),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(
+                  "Batal",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(
+                  "Keluar",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+              
+            ],
+          ),
+    );
+
+    if (confirm == true) {
+      await logout(context); // ← Panggil fungsi logout di sini
+    }
+  }
+
+  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,300 +127,176 @@ class _ProfileScreenState extends State<ProfileScreen> {
         iconTheme: const IconThemeData(color: Colors.black),
       ),
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: <Widget>[
-            buildProfileCard(),
-            const SizedBox(height: 15),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  _showLogoutDialog(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 224, 13, 13),
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  elevation: 1,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: const <Widget>[
-                    Icon(Icons.logout_outlined, color: Colors.white, size: 20),
-                    SizedBox(width: 15),
-                    Text(
-                      'Keluar',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: 16,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    buildProfileCard(),
+                    const SizedBox(height: 15),
+                   InkWell(
+                      onTap: () => _showLogoutDialog(context),
+                      splashColor: Colors.white24,
+                      highlightColor: Colors.white10,
+                      borderRadius: BorderRadius.circular(10),
+                      child: Material(
+                        color: const Color.fromARGB(255, 224, 13, 13),
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          height: 50,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            children: <Widget>[
+                              const Icon(
+                                Icons.logout_outlined,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 15),
+                              Text(
+                                'Keluar',
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
+
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
   Widget buildProfileCard() {
-    return SizedBox(
-      height: 150,
-      child: Card(
-        color: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        elevation: 5,
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: <Widget>[
-                  const CircleAvatar(
-                    radius: 30,
-                    backgroundImage: AssetImage('assets/images/devano.png'),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          _nama,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+    return Card(
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      elevation: 5,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: <Widget>[
+                CircleAvatar(
+                  radius: 35,
+                  backgroundImage:
+                      _image != null
+                          ? FileImage(_image!)
+                          : (_fotoProfil.isNotEmpty
+                              ? NetworkImage(_fotoProfil)
+                              : null),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        _nama,
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: <Widget>[
+                          const Icon(Icons.badge, size: 16, color: Colors.grey),
+                          const SizedBox(width: 6),
+                          Text(
+                            _nik,
+                            style: GoogleFonts.poppins(color: Colors.grey),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: <Widget>[
-                            const Icon(
-                              Icons.badge,
-                              size: 16,
-                              color: Colors.grey,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              _nik,
-                              style: const TextStyle(color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: <Widget>[
-                            const Icon(
-                              Icons.phone,
-                              size: 16,
-                              color: Colors.grey,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              _noHp,
-                              style: const TextStyle(color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: <Widget>[
+                          const Icon(Icons.phone, size: 16, color: Colors.grey),
+                          const SizedBox(width: 6),
+                          Text(
+                            _noHp,
+                            style: GoogleFonts.poppins(color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const Divider(height: 1),
-            InkWell(
+          ),
+          const Divider(height: 1),
+          Material(
+            color: Colors.white,
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(12),
+            ),
+            child: InkWell(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const InfoProfile()),
                 );
               },
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(12),
+              ),
               child: Container(
                 height: 55,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 10,
                 ),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(12),
-                  ),
-                ),
-                child: Center(
                 child: Row(
-                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                      Row(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.center, // <- ini juga
-                        children: const <Widget>[
-                          Icon(Icons.edit, color: Color(0xFF0057A6), size: 20),
-                          SizedBox(width: 6),
-                          Text(
-                            'Info Profil',
-                            style: TextStyle(
-                              color: Color(0xFF0057A6),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    const Icon(
-                        Icons.arrow_forward_ios,
-                        color: Color(0xFF0057A6),
-                        size: 16,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          elevation: 16,
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.white,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Icon(
-                  Icons.logout_rounded,
-                  size: 60,
-                  color: Color(0xFF0057A6),
-                ),
-                const SizedBox(height: 15),
-                Text(
-                  'Konfirmasi Keluar',
-                  style: GoogleFonts.poppins(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF0057A6),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Apakah Anda yakin ingin keluar dari akun?',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                const SizedBox(height: 25),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[300],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                    Row(
+                      children: <Widget>[
+                        const Icon(
+                          Icons.edit,
+                          color: Color(0xFF0057A6),
+                          size: 20,
                         ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          'Batal',
+                        const SizedBox(width: 6),
+                        Text(
+                          'Info Profil',
                           style: GoogleFonts.poppins(
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0057A6),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-               onPressed: () async {
-                          Navigator.pop(context);
-
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.clear();
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Row(
-                                children: const <Widget>[
-                                  Icon(Icons.check_circle, color: Colors.white),
-                                  SizedBox(width: 12),
-                                  Text("Anda telah keluar dari akun."),
-                                ],
-                              ),
-                              backgroundColor: Colors.redAccent,
-                              behavior: SnackBarBehavior.floating,
-                              margin: const EdgeInsets.all(16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-
-                          Future.delayed(const Duration(seconds: 2), () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (_) => Loginregis()),
-                            );
-                          });
-                        },
-
-                        child: Text(
-                          'Ya',
-                          style: GoogleFonts.poppins(
+                            color: const Color(0xFF0057A6),
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.white,
                           ),
                         ),
-                      ),
+                      ],
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      color: Color(0xFF0057A6),
+                      size: 16,
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }

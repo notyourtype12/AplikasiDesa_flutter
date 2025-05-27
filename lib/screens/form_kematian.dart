@@ -108,6 +108,23 @@ class _FormKematianState extends State<FormKematian> {
           context,
           MaterialPageRoute(builder: (context) => BottomNavBar()),
         );
+      } else if (res.statusCode == 409) {
+        String conflictMessage = 'Pengajuan gagal karena konflik data.';
+        try {
+          final responseData = jsonDecode(res.body);
+          if (responseData is Map && responseData.containsKey('message')) {
+            conflictMessage = responseData['message'];
+          }
+        } catch (_) {
+          conflictMessage = 'Pengajuan ditolak: ${res.body}';
+        }
+
+        showCustomSnackbar(
+          context: context,
+          message: conflictMessage,
+          backgroundColor: Colors.orange,
+          icon: Icons.warning_amber_rounded,
+        );
       } else {
         String errorMessage = 'Gagal mengirim pengajuan.';
         try {

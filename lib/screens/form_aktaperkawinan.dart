@@ -107,6 +107,24 @@ class _FormAktaState extends State<FormAktaPerkawinan> {
           context,
           MaterialPageRoute(builder: (context) => BottomNavBar()),
         );
+      } else if (res.statusCode == 409) {
+        String conflictMessage = 'Pengajuan gagal karena konflik data.';
+        try {
+          final responseData = jsonDecode(res.body);
+          if (responseData is Map && responseData.containsKey('message')) {
+            conflictMessage = responseData['message'];
+          }
+        } catch (_) {
+          conflictMessage = 'Pengajuan ditolak: ${res.body}';
+        }
+
+        showCustomSnackbar(
+          context: context,
+          message: conflictMessage,
+          backgroundColor: Colors.orange,
+          icon: Icons.warning_amber_rounded,
+        );
+
       } else {
         String errorMessage = 'Gagal mengirim pengajuan.';
         try {
@@ -119,12 +137,6 @@ class _FormAktaState extends State<FormAktaPerkawinan> {
                   .join('\n');
             } else if (responseData.containsKey('message')) {
               errorMessage = responseData['message'];
-              //     } else {
-              //       errorMessage = 'Terjadi kesalahan: ${res.body}';
-              //     }
-              //   } else {
-              //     errorMessage = 'Response tidak dikenal: ${res.body}';
-              //   }
             }
           }
         } catch (e) {

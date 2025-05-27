@@ -4,10 +4,16 @@ import 'package:digitalv/auth/LupaPassword.dart';
 import 'package:digitalv/auth/auth.dart';
 import 'package:digitalv/widgets/bottom_navbar.dart';
 import 'package:flutter/material.dart';
-// import 'package:workmanager/workmanager.dart';
-import 'package:digitalv/widgets/background_task.dart'; 
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  String? token = prefs.getString('token');
+  runApp(MyApp(isLoggedIn: token != null));
+
+
   // Inisialisasi notifikasi
   // AwesomeNotifications().initialize(null, [
   //   NotificationChannel(
@@ -23,17 +29,21 @@ void main() {
   // // Register background task
   // Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
 
-  runApp(MyApp());
+  // runApp(MyApp());
 }
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+  const MyApp({super.key, required this.isLoggedIn});
+
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        fontFamily: 'Poppins',
         // This is the theme of your application.
         //
         // TRY THIS: Try running your application with "flutter run". You'll see
@@ -51,9 +61,10 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
+      
 
       // home: BottomNavBar(),
-      home: Loginregis(),
+      home: isLoggedIn ? const BottomNavBar() : const Loginregis(),
     );
   }
 }

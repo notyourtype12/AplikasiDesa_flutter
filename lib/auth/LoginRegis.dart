@@ -32,6 +32,11 @@ class _LoginregisState extends State<Loginregis> {
   final nikLoginController = TextEditingController();
   final loginPasswordController = TextEditingController();
 
+  Future<void> simpanStatusLogin(String token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', token);
+  }
+
   // Backend registrasi
   Future<void> _register() async {
     final String nik = _nikController.text.trim();
@@ -40,11 +45,11 @@ class _LoginregisState extends State<Loginregis> {
     final String phone = _phoneController.text.trim();
 
     if (nik.isEmpty || password.isEmpty || email.isEmpty || phone.isEmpty) {
-      showCustomSnackbar(
+      showCustomSnackbarAtTop(
         context: context,
         message: 'Semua field harus diisi',
         backgroundColor: Colors.red,
-        icon: Icons.warning_amber_rounded,
+        icon: Icons.error,
       );
       return;
     }
@@ -84,8 +89,20 @@ class _LoginregisState extends State<Loginregis> {
         Navigator.pop(context);
       } else {
         // Menampilkan pesan error dari response
-        String errorMessage = responseData['message'] ?? 'Terjadi kesalahan';
-        showCustomSnackbar(
+       String errorMessage = responseData['message'] ?? 'Terjadi kesalahan';
+
+        // Coba ambil error validasi detail
+        if (responseData['errors'] != null) {
+          final errors = responseData['errors'] as Map<String, dynamic>;
+          final firstKey = errors.keys.first;
+          final firstErrorList = errors[firstKey];
+
+          if (firstErrorList is List && firstErrorList.isNotEmpty) {
+            errorMessage = firstErrorList.first;
+          }
+        }
+
+        showCustomSnackbarAtTop(
           context: context,
           message: '$errorMessage',
           backgroundColor: Colors.red,
@@ -93,21 +110,21 @@ class _LoginregisState extends State<Loginregis> {
         );
       }
     } on SocketException {
-      showCustomSnackbar(
+      showCustomSnackbarAtTop(
         context: context,
         message: 'Tidak ada koneksi internet',
         backgroundColor: Colors.orange,
         icon: Icons.wifi_off,
       );
     } on TimeoutException {
-      showCustomSnackbar(
+      showCustomSnackbarAtTop(
         context: context,
         message: 'Koneksi timeout, coba lagi!',
         backgroundColor: Colors.orange,
         icon: Icons.timer_off,
       );
     } catch (e) {
-      showCustomSnackbar(
+      showCustomSnackbarAtTop(
         context: context,
         message: 'Terjadi kesalahan: $e',
         backgroundColor: Colors.red,
@@ -121,11 +138,11 @@ class _LoginregisState extends State<Loginregis> {
     final String passwordLogin = loginPasswordController.text.trim();
 
     if (nikLogin.isEmpty || passwordLogin.isEmpty) {
-      showCustomSnackbar(
+      showCustomSnackbarAtTop(
         context: context,
         message: 'NIK dan Password harus diisi',
         backgroundColor: Colors.red,
-        icon: Icons.warning_amber_rounded,
+        icon: Icons.error,
       );
       return;
     }
@@ -151,8 +168,14 @@ class _LoginregisState extends State<Loginregis> {
 
         final String namaPengguna = akunData['nama'] ?? 'Pengguna';
         final String nikPengguna = akunData['nik'] ?? '';
+        final String? token = responseData['data']['token'];
 
         await _saveUserData(namaPengguna, nikPengguna);
+
+         if (token != null) {
+          await simpanStatusLogin(token); 
+          print('🔐 TOKEN YANG DISIMPAN: $token'); 
+        }
 
         showCustomSnackbar(
           context: context,
@@ -171,14 +194,14 @@ class _LoginregisState extends State<Loginregis> {
         );
       } else if ([401, 403, 404].contains(response.statusCode)) {
         final errorMessage = responseData['message'] ?? 'Login gagal.';
-        showCustomSnackbar(
+        showCustomSnackbarAtTop(
           context: context,
           message: errorMessage,
           backgroundColor: Colors.red,
           icon: Icons.error,
         );
       } else {
-        showCustomSnackbar(
+        showCustomSnackbarAtTop(
           context: context,
           message:
               'Terjadi kesalahan: ${responseData['message'] ?? 'Unknown error'}',
@@ -187,14 +210,14 @@ class _LoginregisState extends State<Loginregis> {
         );
       }
     } on SocketException {
-      showCustomSnackbar(
+      showCustomSnackbarAtTop(
         context: context,
         message: 'Tidak ada koneksi internet',
         backgroundColor: Colors.orange,
         icon: Icons.wifi_off,
       );
     } on TimeoutException {
-      showCustomSnackbar(
+      showCustomSnackbarAtTop(
         context: context,
         message: 'Koneksi timeout, coba lagi!',
         backgroundColor: Colors.orange,
@@ -203,7 +226,7 @@ class _LoginregisState extends State<Loginregis> {
     } catch (e, stackTrace) {
      print('❗ ERROR: $e');
     print('🧾 STACKTRACE: $stackTrace');
-    showCustomSnackbar(
+    showCustomSnackbarAtTop(
       context: context,
     message: 'Terjadi kesalahan tak terduga: $e',
     backgroundColor: Colors.red,
@@ -245,26 +268,6 @@ class _LoginregisState extends State<Loginregis> {
                     'assets/images/boy2.png',
                     width: MediaQuery.of(context).size.width - 40,
                   ),
-
-                  // const Text(
-                  //   "Selamat Datang",
-                  //   style: TextStyle(
-                  //     color: Colors.black,
-                  //     fontSize: 24,
-                  //     fontWeight: FontWeight.bold,
-                  //   ),
-                  //   textAlign: TextAlign.center,
-                  // ),
-                  // const SizedBox(height: 15),
-                  // const Text(
-                  //   "Kami Siap Mempermudah Anda",
-                  //   style: TextStyle(
-                  //     color: Colors.black,
-                  //     fontSize: 20,
-                  //   ),
-                  //   textAlign: TextAlign.center,
-                  // ),
-                  // const SizedBox(height:  1),
                   const SizedBox(height: 20), // Jarak antara gambar dan teks
 
                   SizedBox(
@@ -427,14 +430,37 @@ class _LoginregisState extends State<Loginregis> {
                           border: OutlineInputBorder(),
                         ),
                         style: const TextStyle(fontSize: 14),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'NIK tidak boleh kosong';
-                          }
-                          return null;
-                        },
+                       
                       ),
 
+                      const SizedBox(height: 20),
+
+                      // Email
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.email),
+                          labelText: 'E-Mail',
+                          hintText: 'Masukkan E-Mail Anda',
+                          border: OutlineInputBorder(),
+                        ),
+                        style: const TextStyle(fontSize: 14),
+
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Nomor HP
+                      TextFormField(
+                        controller: _phoneController,
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.phone),
+                          labelText: 'Nomor HP',
+                          hintText: 'Masukkan Nomor HP Anda',
+                          border: OutlineInputBorder(),
+                        ),
+                        style: const TextStyle(fontSize: 14),
+                    
+                      ),
                       const SizedBox(height: 20),
 
                       // Password
@@ -460,50 +486,6 @@ class _LoginregisState extends State<Loginregis> {
                           border: const OutlineInputBorder(),
                         ),
                         style: TextStyle(fontSize: 14),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Password tidak boleh kosong';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Email
-                      TextFormField(
-                        controller: _emailController,
-                        decoration: const InputDecoration(
-                          icon: Icon(Icons.email),
-                          labelText: 'E-Mail',
-                          hintText: 'Masukkan E-Mail Anda',
-                          border: OutlineInputBorder(),
-                        ),
-                        style: const TextStyle(fontSize: 14),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'E-Mail tidak boleh kosong';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Nomor HP
-                      TextFormField(
-                        controller: _phoneController,
-                        decoration: const InputDecoration(
-                          icon: Icon(Icons.phone),
-                          labelText: 'Nomor HP',
-                          hintText: 'Masukkan Nomor HP Anda',
-                          border: OutlineInputBorder(),
-                        ),
-                        style: const TextStyle(fontSize: 14),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Nomor HP tidak boleh kosong';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 20),
 
@@ -613,7 +595,7 @@ class _LoginregisState extends State<Loginregis> {
                         labelText: 'NIK',
                         border: OutlineInputBorder(),
                       ),
-                      style: const TextStyle(fontSize: 14),
+                      style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(height: 20),
 
@@ -638,9 +620,12 @@ class _LoginregisState extends State<Loginregis> {
                         labelText: 'Password',
                         border: const OutlineInputBorder(),
                       ),
-                      style: const TextStyle(fontSize: 14),
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
                     Align(
                       alignment: Alignment.centerRight,
@@ -659,12 +644,12 @@ class _LoginregisState extends State<Loginregis> {
                           style: GoogleFonts.poppins(
                             fontSize: 13,
                             color: Colors.blue,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
                     // Tombol Login
                     Container(

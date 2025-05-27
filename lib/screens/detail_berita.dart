@@ -34,10 +34,12 @@ class _DetailBeritaState extends State<DetailBerita> {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
+         print('Decoded JSON: $data'); 
         setState(() {
           berita = Berita.fromJson(data);
           isLoading = false;
         });
+       
       } else {
         setState(() {
           isLoading = false;
@@ -56,27 +58,32 @@ class _DetailBeritaState extends State<DetailBerita> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return Scaffold(
-        appBar: AppBar(title: Text('Detail Berita', style: GoogleFonts.poppins())),
+        appBar: AppBar(
+          title: Text('Detail Berita', style: GoogleFonts.poppins()),
+        ),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (berita == null) {
       return Scaffold(
-        appBar: AppBar(title: Text('Detail Berita', style: GoogleFonts.poppins())),
+        appBar: AppBar(
+          title: Text('Detail Berita', style: GoogleFonts.poppins()),
+        ),
         body: Center(
           child: Text(
             'Data berita tidak ditemukan',
-            style: GoogleFonts.poppins(),
+            style: GoogleFonts.poppins(fontSize: 16),
           ),
         ),
       );
     }
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          berita!.judul,
+          berita!.judul.length > 30
+              ? '${berita!.judul.substring(0, 30)}...'
+              : berita!.judul,
           style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
         ),
       ),
@@ -86,22 +93,43 @@ class _DetailBeritaState extends State<DetailBerita> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (berita!.gambar != null)
-              Image.network(berita!.gambar!, fit: BoxFit.cover),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(berita!.gambar!, fit: BoxFit.cover),
+              ),
             const SizedBox(height: 16),
             Text(
               berita!.judul,
-              style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold),
+              style: GoogleFonts.poppins(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            const SizedBox(height: 8),
+           Text(
+              'Penulis : ${berita!.nama?.isNotEmpty == true ? berita!.nama : 'Tidak diketahui'}',
+              style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
+            ),
+
             const SizedBox(height: 8),
             Text(
               berita!.tanggal,
-              style: GoogleFonts.poppins(color: Colors.grey),
+              style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
             ),
-            const Divider(height: 32),
-            Text(
-              berita!.deskripsi,
-              style: GoogleFonts.poppins(fontSize: 16),
-            ),
+            const Divider(height: 32,),
+
+            ...berita!.deskripsi
+                .split('. ')
+                .map(
+                  (kalimat) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: SelectableText(
+                      '${kalimat.trim()}.',
+                      style: GoogleFonts.poppins(fontSize: 16, height: 1.6),
+                      textAlign: TextAlign.justify,
+                    ),
+                  ),
+                ),
           ],
         ),
       ),

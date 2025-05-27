@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../controllers/ProfileController.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,11 +16,12 @@ class _DetailProfileState extends State<DetailProfile> {
   final TextEditingController kkController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _loadProfileData(); 
+    _loadProfileData();
   }
 
   Future<void> _loadProfileData() async {
@@ -52,13 +54,12 @@ class _DetailProfileState extends State<DetailProfile> {
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             buildTextField('NIK', nikController, readOnly: true),
             buildTextField('No Kartu keluarga', kkController, readOnly: true),
-            buildTextField('Nama lengkap', nameController),
+            buildTextField('Nama lengkap', nameController, readOnly: true),
             buildTextField('No Handphone', phoneController),
             buildTextField(
               'E-mail',
@@ -68,34 +69,64 @@ class _DetailProfileState extends State<DetailProfile> {
             const SizedBox(height: 15),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Profile berhasil diperbarui'),
-                    ),
-                  );
-                },
+              child : ElevatedButton(
+                onPressed:
+                    isLoading
+                        ? null
+                        : () async {
+                          setState(() {
+                            isLoading = true;
+                          });
+
+                          final success = await updateEmailNoHp(
+                            context,
+                            email: emailController.text.trim(),
+                            noHp: phoneController.text.trim(),
+                          );
+
+                          setState(() {
+                            isLoading = false;
+                          });
+
+                          if (success) {
+                            Navigator.pop(
+                              context,
+                              true,
+                            ); 
+                          }
+
+                        },
+
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0057A6),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      10,
-                    ), // Disamakan dengan text field
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: Text(
-                  'Ubah',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
+                child:
+                    isLoading
+                        ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                        : Text(
+                          'Ubah',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
               ),
-            ),
 
+            ),
           ],
         ),
       ),
@@ -108,7 +139,10 @@ class _DetailProfileState extends State<DetailProfile> {
     bool readOnly = false,
     TextInputType keyboardType = TextInputType.text,
   }) {
-    final Color borderColor = readOnly ? const Color.fromARGB(255, 13, 103, 221)  : const Color(0xFF0057A6);
+    final Color borderColor =
+        readOnly
+            ? const Color.fromARGB(255, 13, 103, 221)
+            : const Color(0xFF0057A6);
     final Color textColor = readOnly ? Colors.grey.shade700 : Colors.black;
 
     return Padding(
@@ -117,7 +151,11 @@ class _DetailProfileState extends State<DetailProfile> {
         controller: controller,
         readOnly: readOnly,
         keyboardType: keyboardType,
-        style: GoogleFonts.poppins(color: Colors.black, fontSize: 12),
+        style: GoogleFonts.poppins(
+          color: Colors.black,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
@@ -133,17 +171,11 @@ class _DetailProfileState extends State<DetailProfile> {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: borderColor,
-              width: 1.5,
-            ),
+            borderSide: BorderSide(color: borderColor, width: 1.5),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: borderColor,
-              width: 2,
-            ),
+            borderSide: BorderSide(color: borderColor, width: 2),
           ),
         ),
       ),

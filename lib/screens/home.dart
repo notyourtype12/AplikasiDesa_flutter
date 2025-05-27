@@ -5,9 +5,9 @@ import 'package:digitalv/screens/form_ktp.dart';
 import 'package:digitalv/screens/form_pindahpenduduk.dart';
 import 'package:digitalv/screens/form_sktm.dart';
 import 'package:digitalv/screens/form_suratmiskin.dart';
+import 'package:digitalv/screens/info_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:digitalv/screens/pengaduan.dart';
-import 'package:digitalv/screens/form_pengajuan.dart';
 import 'package:digitalv/screens/form_kematian.dart';
 import 'package:digitalv/screens/info_berita.dart';
 import 'package:digitalv/screens/detail_berita.dart';
@@ -17,18 +17,29 @@ import 'package:digitalv/models/detail_berita.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../config/globals.dart';
+import '../controllers/ProfileController.dart';
+import 'dart:io';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
-  
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  File? _image;
   bool _isNavigating = false;
+  String namaUser = 'User'; // Default
+  String _fotoProfil = '';
 
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  // List layanan (menu utama)
   final List<Map<String, dynamic>> layanan = [
     {
       'icon': Icons.insert_drive_file,
@@ -40,11 +51,15 @@ class _HomeScreenState extends State<HomeScreen> {
       'label': 'Kartu Keluarga',
       'color': const Color(0xFF388E3C),
     },
-    {'icon': Icons.credit_card, 'label': 'KTP', 'color': const Color(0xFF455A64)},
+    {
+      'icon': Icons.credit_card,
+      'label': 'KTP',
+      'color': const Color(0xFF455A64),
+    },
     {
       'icon': Icons.money_sharp,
       'label': 'SKTM',
-      'color': const Color.fromARGB(255, 255, 147, 7),
+      'color': const Color(0xFFFF9307),
     },
     {
       'icon': Icons.diversity_3,
@@ -59,53 +74,64 @@ class _HomeScreenState extends State<HomeScreen> {
     {
       'icon': Icons.apartment,
       'label': 'Pindah Penduduk',
-      'color': const Color.fromARGB(255, 167, 0, 17),
+      'color': const Color(0xFFA70011),
     },
     {
       'icon': Icons.receipt_long,
       'label': 'Pernyataan Miskin',
-      'color': const Color.fromARGB(255, 116, 53, 31),
+      'color': const Color(0xFF74351F),
     },
   ];
 
+  // Fungsi untuk ambil daftar berita dari API
   Future<List<Berita>> fetchBeritaList() async {
-   final response = await http.get(
-      Uri.parse('$baseURL/berita'),
-      headers: headers,
-    );
+    try {
+      final response = await http.get(
+        Uri.parse('$baseURL/berita'),
+        headers: headers,
+      );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => Berita.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load berita');
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((json) => Berita.fromJson(json)).toList();
+      } else {
+        print(
+          'Request failed\nStatus: ${response.statusCode}\nBody: ${response.body}',
+        );
+        throw Exception(
+          'Gagal memuat data berita. Status: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      print('Exception saat mengambil data berita: $e');
+      throw Exception('Terjadi kesalahan saat memuat data berita');
     }
   }
 
+  // Untuk membuat warna lebih soft
   Color tintColor(Color baseColor) {
     return Color.lerp(baseColor, Colors.white, 0.7)!;
   }
 
-  String namaUser = 'User'; // Default
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUserData();
+  // Memuat ulang data profil
+  Future<void> _refreshProfile() async {
+    await getProfilFromApi(context); // Ambil data dari API
+    await _loadUserData;
   }
 
-  // Mengambil data dari SharedPreferences
+  // Mengambil data nama dan foto dari SharedPreferences
   void _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       namaUser = prefs.getString('nama') ?? 'User';
+      _fotoProfil = prefs.getString('foto_profil') ?? '';
     });
   }
 
-  // Menyimpan data nama pengguna ke SharedPreferences (Misalnya setelah login)
+  // Menyimpan data nama pengguna (misalnya setelah login)
   void _saveUserData(String nama) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('nama', nama); // Menyimpan nama di SharedPreferences
+    prefs.setString('nama', nama);
   }
 
   @override
@@ -118,40 +144,74 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
+                          Container(
                 width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
-
+                padding: const EdgeInsets.fromLTRB(20, 40, 20, 45),
                 decoration: const BoxDecoration(
-                  color: Color(0xFF0057A6), // warna biru
+                  color: Color(0xFF0057A6),
                   borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
                   ),
                 ),
-                child: Column(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Selamat Datang,',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white, 
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Selamat Datang,',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              '$namaUser 👋',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    SizedBox(height: 5),
-                    Text(
-                       '$namaUser!',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                    const SizedBox(width: 30),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 13),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => InfoProfile(),
+                            ),
+                          );
+                        },
+                        child: CircleAvatar(
+                          radius: 20,
+                          backgroundColor: Colors.white,
+                          backgroundImage: _image != null
+                              ? FileImage(_image!)
+                              : _fotoProfil.isNotEmpty
+                                  ? NetworkImage(_fotoProfil)
+                                  : null,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                
               ),
+
+
               const SizedBox(height: 10),
               Container(
                 width: double.infinity,
@@ -182,18 +242,18 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                 Text(
                                   'Pengaduan!',
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     color: Colors.white,
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                const Text(
+                                 Text(
                                   'Lakukan pengaduan jika anda memiliki keluhan, saran, atau masukan.',
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     color: Colors.white,
                                     fontSize: 12,
                                   ),
@@ -216,10 +276,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
-                                    children: const [
+                                    children: [
                                       Text(
                                         'Klik Disini',
-                                        style: TextStyle(
+                                        style: GoogleFonts.poppins(
                                           color: Colors.black,
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
@@ -335,7 +395,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                    
                   Padding(
-                    padding: const EdgeInsets.only(left: 0, right: 0, top: 5), // Hapus padding top
+                    padding: const EdgeInsets.only(left: 0, right: 0, top: 15), // Hapus padding top
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -365,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 'Lihat Semua',
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 14,
                                   color: Colors.grey,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -383,7 +443,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                   const SizedBox(height: 15),
+                   const SizedBox(height: 20),
                     SizedBox(
                         height: 170,
                         child: FutureBuilder<List<Berita>>(
