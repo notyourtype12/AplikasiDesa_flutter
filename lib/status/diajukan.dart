@@ -17,7 +17,7 @@ class PengajuanView extends StatefulWidget {
 class _PengajuanViewState extends State<PengajuanView> {
   late Future<List<StatusDiajukanModel>> futurePengajuan;
 
-   @override
+  @override
   void initState() {
     super.initState();
     futurePengajuan = fetchPengajuan();
@@ -43,7 +43,6 @@ class _PengajuanViewState extends State<PengajuanView> {
       throw Exception('Gagal mengambil data');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -120,16 +119,16 @@ class _PengajuanViewState extends State<PengajuanView> {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Status : ${item.status}",
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 128, 128, 128),
-                              ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Status : ${item.status}",
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 128, 128, 128),
                             ),
-                     const SizedBox(height: 10),
+                          ),
+                          const SizedBox(height: 10),
                           InkWell(
                             borderRadius: BorderRadius.circular(12),
                             onTap: () async {
@@ -183,7 +182,6 @@ class _PengajuanViewState extends State<PengajuanView> {
                                     ),
                               );
 
-
                               if (confirm == true) {
                                 final response = await http.delete(
                                   Uri.parse(
@@ -195,7 +193,7 @@ class _PengajuanViewState extends State<PengajuanView> {
                                 if (response.statusCode == 200) {
                                   showCustomSnackbar(
                                     context: context,
-                                    message: "Surat berhasil dihapus",
+                                    message: "Pengajuan berhasil dihapus",
                                     backgroundColor: Colors.green,
                                     icon: Icons.check_circle,
                                   );
@@ -214,28 +212,29 @@ class _PengajuanViewState extends State<PengajuanView> {
                               }
                             },
                             child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                           child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.delete_outline,
-                                  color: Color(0xFFF91717),
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  "Hapus",
-                                  style: GoogleFonts.poppins(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 8,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.delete_outline,
                                     color: Color(0xFFF91717),
-                                    fontWeight: FontWeight.bold,
                                   ),
-                                ),
-                              ],
-                            ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    "Hapus",
+                                    style: GoogleFonts.poppins(
+                                      color: Color(0xFFF91717),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-
-                         
                         ],
                       ),
                     ),

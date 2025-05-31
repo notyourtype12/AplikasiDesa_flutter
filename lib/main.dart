@@ -2,6 +2,7 @@ import 'package:digitalv/auth/LoginRegis.dart';
 import 'package:digitalv/auth/LupaPassword.dart';
 
 import 'package:digitalv/auth/auth.dart';
+import 'package:digitalv/screens/splashscreen.dart';
 import 'package:digitalv/widgets/bottom_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -64,7 +65,7 @@ class MyApp extends StatelessWidget {
       
 
       // home: BottomNavBar(),
-      home: isLoggedIn ? const BottomNavBar() : const Loginregis(),
+      home: isLoggedIn ? const BottomNavBar() : const OnBoardingScreen() ,
     );
   }
 }

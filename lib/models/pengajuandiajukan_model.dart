@@ -1,5 +1,5 @@
 class StatusDiajukanModel {
-  final int idPengajuan;
+  final String idPengajuan;
   final String namaSurat;
   final String tanggalDiajukan;
   final String status;

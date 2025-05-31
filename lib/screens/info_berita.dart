@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:digitalv/models/detail_berita.dart';
 import 'detail_berita.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class InfoBerita extends StatefulWidget {
   @override
@@ -29,7 +30,7 @@ class _InfoBeritaState extends State<InfoBerita> {
     super.dispose();
   }
 
- Future<void> fetchBeritaList() async {
+  Future<void> fetchBeritaList() async {
     try {
       final response = await http.get(
         Uri.parse('$baseURL/berita'),
@@ -56,7 +57,7 @@ class _InfoBeritaState extends State<InfoBerita> {
     }
   }
 
-void _onSearchChanged() {
+  void _onSearchChanged() {
     String searchText = searchController.text.toLowerCase();
 
     setState(() {
@@ -73,11 +74,23 @@ void _onSearchChanged() {
     });
   }
 
-
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Info Berita'), centerTitle: true),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(
+          'Info Berita',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+            color: const Color(0xFF0057A6),
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+      ),
+
       body: Column(
         children: [
           Padding(
@@ -164,40 +177,51 @@ void _onSearchChanged() {
                                   Expanded(
                                     child: Padding(
                                       padding: const EdgeInsets.all(10),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            berita['judul'] ??
-                                                'Judul tidak tersedia',
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: Color(
+                                            0xFFE3F2FD,
+                                          ), // Warna background
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              berita['judul'] ??
+                                                  'Judul tidak tersedia',
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
-                                          ),
-                                          SizedBox(height: 6),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.calendar_today,
-                                                size: 14,
-                                                color: Colors.grey,
-                                              ),
-                                              SizedBox(width: 4),
-                                              Text(
-                                                berita['tanggal'] ??
-                                                    'Tanggal tidak tersedia',
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.grey[600],
+                                            SizedBox(height: 6),
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.calendar_today,
+                                                  size: 14,
+                                                  color: Colors.grey,
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                                SizedBox(width: 4),
+                                                Text(
+                                                  berita['tanggal'] ??
+                                                      'Tanggal tidak tersedia',
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: Colors.grey[600],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -213,5 +237,4 @@ void _onSearchChanged() {
       ),
     );
   }
-
 }

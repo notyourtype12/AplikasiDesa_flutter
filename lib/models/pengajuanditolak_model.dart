@@ -1,5 +1,5 @@
 class StatusDitolakModel {
-  final int idPengajuan;
+  final String idPengajuan;
   final String namaSurat;
   final String status;
   final String keteranganDitolak;
