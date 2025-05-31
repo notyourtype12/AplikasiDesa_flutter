@@ -1,3 +1,4 @@
+import 'package:digitalv/screens/detail_notifikasi.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -5,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../config/globals.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:digitalv/widgets/snackbarcustom.dart';
 
 
 class NotificationScreen extends StatefulWidget {
@@ -25,7 +27,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     fetchLatestNotifikasi();
   }
 
-Future<void> fetchLatestNotifikasi() async {
+  Future<void> fetchLatestNotifikasi() async {
     final prefs = await SharedPreferences.getInstance();
     final nik = prefs.getString('nik') ?? '';
 
@@ -55,13 +57,6 @@ Future<void> fetchLatestNotifikasi() async {
             final now = DateTime.now();
             final diffSeconds = now.difference(localTime).inSeconds;
 
-            // Debug log
-            print('--- Pengajuan ---');
-            print('Raw time: $rawTime');
-            print('Parsed toLocal: $localTime');
-            print('Now: $now');
-            print('Selisih (detik): $diffSeconds');
-
             fetched.add({
               'title': 'Notifikasi Pengajuan',
               'message': item['pesan'],
@@ -77,18 +72,16 @@ Future<void> fetchLatestNotifikasi() async {
             final now = DateTime.now();
             final diffSeconds = now.difference(localTime).inSeconds;
 
-            // Debug log
-            print('--- Pengaduan ---');
-            print('Raw time: $rawTime');
-            print('Parsed toLocal: $localTime');
-            print('Now: $now');
-            print('Selisih (detik): $diffSeconds');
+            print('ID Ref Pengaduan: ${item['id_ref']}');
 
             fetched.add({
               'title': 'Notifikasi Pengaduan',
               'message': item['pesan'],
               'time': rawTime,
+              'id_ref': item['id_ref'], 
             });
+
+
           }
         }
 
@@ -109,10 +102,10 @@ Future<void> fetchLatestNotifikasi() async {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70.0),
         child: AppBar(
@@ -153,47 +146,108 @@ Future<void> fetchLatestNotifikasi() async {
                 padding: const EdgeInsets.all(12),
                 itemBuilder: (context, index) {
                   final notif = notifications[index];
-                  return Card(
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 6),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ListTile(
-                      leading: const Icon(
-                        Icons.notifications,
-                        color: Color(0xFF1976D2),
+                  final isPengajuan = notif['title'] == 'Notifikasi Pengajuan';
+
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOut,
+                    child: Card(
+                      color: Colors.white,
+                      elevation: 3,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      title: Text(
-                        notif['title'] ?? '',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
+                      child: ListTile(
+                       onTap: () {
+                          if (notif['title'] == 'Notifikasi Pengaduan' &&
+                              notif['id_ref'] != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => DetailPengaduanScreen(
+                                      idPengaduan:
+                                          (notif['id_ref'] is int)
+                                              ? notif['id_ref']
+                                              : int.parse(
+                                                notif['id_ref'].toString(),
+                                              ),
+                                    ),
+
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('ID Pengaduan tidak ditemukan'),
+                              ),
+                            );
+                          }
+                        },
+
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        leading: CircleAvatar(
+                          backgroundColor:
+                              isPengajuan
+                                  ? const Color(0xFF2196F3)
+                                  : const Color(0xFFFF9800),
+                          child: Icon(
+                            isPengajuan
+                                ? Icons.mark_email_read
+                                : Icons.campaign,
+                            color: Colors.white,
+                          ),
+                        ),
+                        title: Text(
+                          notif['title'] ?? '',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              notif['message'] ?? '',
+                              style: GoogleFonts.poppins(fontSize: 13),
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.access_time,
+                                  size: 13,
+                                  color: Colors.grey,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  notif['time'] != null
+                                      ? timeago.format(
+                                        DateTime.parse(notif['time']).toLocal(),
+                                        locale: 'id',
+                                      )
+                                      : '',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 11,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                      subtitle: Text(
-                        notif['message'] ?? '',
-                        style: GoogleFonts.poppins(fontSize: 13),
-                      ),
-                      trailing: Text(
-                        notif['time'] != null
-                            ? timeago.format(
-                              DateTime.parse(notif['time']).toLocal(),
-                              locale: 'id',
-                            )
-
-                            : '',
-                        style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-
-
                     ),
                   );
                 },
               ),
     );
   }
+
+
 }
