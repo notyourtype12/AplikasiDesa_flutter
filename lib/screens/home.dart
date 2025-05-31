@@ -6,6 +6,7 @@ import 'package:digitalv/screens/form_pindahpenduduk.dart';
 import 'package:digitalv/screens/form_sktm.dart';
 import 'package:digitalv/screens/form_suratmiskin.dart';
 import 'package:digitalv/screens/info_profile.dart';
+import 'package:digitalv/screens/notifikasi.dart';
 import 'package:flutter/material.dart';
 import 'package:digitalv/screens/pengaduan.dart';
 import 'package:digitalv/screens/form_kematian.dart';
@@ -144,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-                          Container(
+            Container(
                 width: double.infinity,
                 padding: const EdgeInsets.fromLTRB(20, 40, 20, 45),
                 decoration: const BoxDecoration(
@@ -159,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.only(top: 10),
+                        padding: const EdgeInsets.only(top: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -184,7 +185,58 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 30),
+                    const SizedBox(width: 20),
+                    // Notification Icon
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const NotificationScreen() ,
+                            ),
+                          );
+                        },
+                          child: Stack(
+                            children: [
+                              Icon(
+                                Icons.notifications_outlined,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                              // Optional: Add notification badge
+                              // Positioned(
+                              //   right: 0,
+                              //   top: 0,
+                              //   child: Container(
+                              //     padding: EdgeInsets.all(2),
+                              //     decoration: BoxDecoration(
+                              //       color: Colors.red,
+                              //       borderRadius: BorderRadius.circular(8),
+                              //     ),
+                              //     constraints: BoxConstraints(
+                              //       minWidth: 16,
+                              //       minHeight: 16,
+                              //     ),
+                              //     child: Text(
+                              //       '3', // notification count
+                              //       style: TextStyle(
+                              //         color: Colors.white,
+                              //         fontSize: 10,
+                              //         fontWeight: FontWeight.bold,
+                              //       ),
+                              //       textAlign: TextAlign.center,
+                              //     ),
+                              //   ),
+                              // ),
+                            ],
+                          ),
+                        
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    // Profile Photo
                     Padding(
                       padding: const EdgeInsets.only(top: 13),
                       child: GestureDetector(
@@ -199,9 +251,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: CircleAvatar(
                           radius: 20,
                           backgroundColor: Colors.white,
-                          backgroundImage: _image != null
-                              ? FileImage(_image!)
-                              : _fotoProfil.isNotEmpty
+                          backgroundImage:
+                              _image != null
+                                  ? FileImage(_image!)
+                                  : _fotoProfil.isNotEmpty
                                   ? NetworkImage(_fotoProfil)
                                   : null,
                         ),

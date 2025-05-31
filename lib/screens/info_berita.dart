@@ -111,82 +111,79 @@ class _InfoBeritaState extends State<InfoBerita> {
             ),
           ),
           Expanded(
-            child:
-                filteredBeritaList.isEmpty
-                    ? Center(
-                      child: Text(
-                        'Tidak ada berita ditemukan',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    )
-                    : ListView.builder(
-                      itemCount: filteredBeritaList.length,
-                      itemBuilder: (context, index) {
-                        final berita = filteredBeritaList[index];
+            child: Container(
+              decoration: BoxDecoration(
+                color: Color(0xFFFFFFFF), // Pure white with full opacity
+              ),
+              child:
+                  filteredBeritaList.isEmpty
+                      ? Center(
+                        child: Text(
+                          'Tidak ada berita ditemukan',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      )
+                      : ListView.builder(
+                        itemCount: filteredBeritaList.length,
+                        itemBuilder: (context, index) {
+                          final berita = filteredBeritaList[index];
 
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
                             ),
-                            elevation: 3,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(16),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (_) => DetailBerita(
-                                          beritaId: berita['idberita'],
-                                        ),
-                                  ),
-                                );
-                              },
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(16),
-                                      bottomLeft: Radius.circular(16),
-                                    ),
-                                    child:
-                                        berita['gambar'] != null
-                                            ? Image.network(
-                                              berita['gambar'],
-                                              width: 100,
-                                              height: 100,
-                                              fit: BoxFit.cover,
-                                            )
-                                            : Container(
-                                              width: 100,
-                                              height: 100,
-                                              color: Colors.grey[300],
-                                              child: Icon(
-                                                Icons.image,
-                                                size: 40,
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Container(
-                                        padding: const EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          color: Color(
-                                            0xFFE3F2FD,
-                                          ), // Warna background
-                                          borderRadius: BorderRadius.circular(
-                                            8,
+                            child: Card(
+                              color:
+                                  Colors
+                                      .white, // Add this line to make card white
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 3,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(16),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (_) => DetailBerita(
+                                            beritaId: berita['idberita'],
                                           ),
-                                        ),
+                                    ),
+                                  );
+                                },
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(16),
+                                        bottomLeft: Radius.circular(16),
+                                      ),
+                                      child:
+                                          berita['gambar'] != null
+                                              ? Image.network(
+                                                berita['gambar'],
+                                                width: 100,
+                                                height: 100,
+                                                fit: BoxFit.cover,
+                                              )
+                                              : Container(
+                                                width: 100,
+                                                height: 100,
+                                                color: Colors.grey[300],
+                                                child: Icon(
+                                                  Icons.image,
+                                                  size: 40,
+                                                  color: Colors.grey[600],
+                                                ),
+                                              ),
+                                    ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10),
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
@@ -224,14 +221,14 @@ class _InfoBeritaState extends State<InfoBerita> {
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
+                          );
+                        },
+                      ),
+            ),
           ),
         ],
       ),

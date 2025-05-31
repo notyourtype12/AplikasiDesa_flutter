@@ -195,7 +195,7 @@ class _DitolakStateView extends State<DitolakView> {
                                 if (response.statusCode == 200) {
                                   showCustomSnackbar(
                                     context: context,
-                                    message: "Surat berhasil dihapus",
+                                    message: "Pengajuan berhasil dihapus",
                                     backgroundColor: Colors.green,
                                     icon: Icons.check_circle,
                                   );

@@ -198,7 +198,7 @@ class _PengaduanState extends State<Pengaduan> {
                           },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0057A6),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    minimumSize: const Size(double.infinity, 48),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
