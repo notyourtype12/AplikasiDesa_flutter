@@ -249,25 +249,25 @@ class _InfoProfileState extends State<InfoProfile> {
                   buildProfileRow('E-Mail', _email),
                   
                   const SizedBox(height: 8),
-                  InkWell(
-                    // onTap: () {
-                    //   Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //       builder: (context) => const UbahPasswordPage(),
-                    //     ),
-                    //   );
-                    // },
-                    child: Text(
-                      'Ubah Password',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Color(0xFF0057A6),
-                        fontWeight: FontWeight.bold,
+                  // InkWell(
+                  //   // onTap: () {
+                  //   //   Navigator.push(
+                  //   //     context,
+                  //   //     MaterialPageRoute(
+                  //   //       builder: (context) => const UbahPasswordPage(),
+                  //   //     ),
+                  //   //   );
+                  //   // },
+                  //   child: Text(
+                  //     'Ubah Password',
+                  //     style: GoogleFonts.poppins(
+                  //       fontSize: 14,
+                  //       color: Color(0xFF0057A6),
+                  //       fontWeight: FontWeight.bold,
 
-                      ),
-                    ),
-                  ),
+                  //     ),
+                  //   ),
+                  // ),
                   
                 ],
               ),

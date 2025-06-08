@@ -205,31 +205,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: Colors.white,
                                 size: 24,
                               ),
-                              // Optional: Add notification badge
-                              // Positioned(
-                              //   right: 0,
-                              //   top: 0,
-                              //   child: Container(
-                              //     padding: EdgeInsets.all(2),
-                              //     decoration: BoxDecoration(
-                              //       color: Colors.red,
-                              //       borderRadius: BorderRadius.circular(8),
-                              //     ),
-                              //     constraints: BoxConstraints(
-                              //       minWidth: 16,
-                              //       minHeight: 16,
-                              //     ),
-                              //     child: Text(
-                              //       '3', // notification count
-                              //       style: TextStyle(
-                              //         color: Colors.white,
-                              //         fontSize: 10,
-                              //         fontWeight: FontWeight.bold,
-                              //       ),
-                              //       textAlign: TextAlign.center,
-                              //     ),
-                              //   ),
-                              // ),
                             ],
                           ),
                         
@@ -257,13 +232,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   : _fotoProfil.isNotEmpty
                                   ? NetworkImage(_fotoProfil)
                                   : null,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-
 
               const SizedBox(height: 10),
               Container(
@@ -421,9 +395,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
 
                         _isNavigating = false; // aktifkan kembali setelah kembali dari push
-
-
-                          
                           },
                           child: Column(
                             children: [
@@ -469,9 +440,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           },
                           style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero, // Mengurangi padding bawaan TextButton
-                            minimumSize: Size.zero, // Mengurangi minimum size
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Mengurangi area tap
+                            padding: EdgeInsets.zero, 
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
                           child: Row(
                             children: const [
@@ -600,8 +571,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         ),
                       )
-
-                   
                   ],
                 ),
               ),

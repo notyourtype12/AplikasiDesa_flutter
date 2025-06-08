@@ -76,7 +76,7 @@ class _LoginregisState extends State<Loginregis> {
       if (response.statusCode == 201) {
         showCustomSnackbar(
           context: context,
-          message: responseData['message'] ?? 'Registrasi berhasil!',
+          message: responseData['message'] ?? 'Akun berhasil diaktivasi.',
           backgroundColor: Colors.green,
           icon: Icons.check_circle,
         );
@@ -156,7 +156,7 @@ class _LoginregisState extends State<Loginregis> {
 
       final responseData = jsonDecode(response.body);
 
-      // 🐞 Cetak response status dan body untuk debugging
+      //  Cetak response status dan body untuk debugging
       print('📥 Status Code: ${response.statusCode}');
       print('📦 Response Body: ${response.body}');
 

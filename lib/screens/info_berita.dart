@@ -41,7 +41,7 @@ class _InfoBeritaState extends State<InfoBerita> {
         final List<dynamic> data = json.decode(response.body);
         setState(() {
           beritaList = data;
-          filteredBeritaList = data; // tampilkan semua saat awal
+          filteredBeritaList = data; 
         });
       } else {
         print(
@@ -62,11 +62,10 @@ class _InfoBeritaState extends State<InfoBerita> {
 
     setState(() {
       if (searchText.isEmpty) {
-        filteredBeritaList = beritaList; // tampilkan semua jika kosong
+        filteredBeritaList = beritaList; 
       } else {
         filteredBeritaList =
             beritaList.where((berita) {
-              // aman dari null dengan operator ? dan fallback ''
               String judul = berita['judul']?.toString().toLowerCase() ?? '';
               return judul.contains(searchText);
             }).toList();
@@ -113,7 +112,7 @@ class _InfoBeritaState extends State<InfoBerita> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: Color(0xFFFFFFFF), // Pure white with full opacity
+                color: Color(0xFFFFFFFF), 
               ),
               child:
                   filteredBeritaList.isEmpty
@@ -136,7 +135,7 @@ class _InfoBeritaState extends State<InfoBerita> {
                             child: Card(
                               color:
                                   Colors
-                                      .white, // Add this line to make card white
+                                      .white, 
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
@@ -228,10 +227,10 @@ class _InfoBeritaState extends State<InfoBerita> {
                           );
                         },
                       ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+        }

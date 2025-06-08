@@ -96,6 +96,7 @@ flutter:
     - assets/images/upload.png
     - assets/images/boy.png
     - assets/icons/icons.jpg
+    - assets/icons/logoaplikasi.png
     - assets/images/onboard1.png
     - assets/images/onboard2.png
     - assets/images/onboard3.png
@@ -144,6 +145,6 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/icons/icons.jpg"
+  image_path: "assets/icons/logoaplikasi.png"
   remove_alpha_ios: true
 

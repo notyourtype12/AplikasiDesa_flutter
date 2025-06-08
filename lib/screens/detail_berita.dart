@@ -64,7 +64,6 @@ class _DetailBeritaState extends State<DetailBerita> {
         body: const Center(child: CircularProgressIndicator()),
       );
     }
-
     if (berita == null) {
       return Scaffold(
         appBar: AppBar(
